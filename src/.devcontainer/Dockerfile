@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     build-essential mesa-utils python3-colcon-common-extensions \
     ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-slam-toolbox \
     ros-humble-teleop-twist-keyboard \
+    ros-humble-rqt* \
    # ros-humble-gazebo-ros-pkgs \
    # ros-humble-gazebo-plugins \
     ros-humble-cartographer ros-humble-cartographer-ros \

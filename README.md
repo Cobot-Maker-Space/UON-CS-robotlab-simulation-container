@@ -1,6 +1,6 @@
 # 🐢 TurtleBot Desktop Development Container (with noVNC)
 
-This repository provides a ready-to-use **Docker-based ROS 2 Humble development environment** for TurtleBot3 simulation and development.  
+This repository provides a ready-to-use **Docker-based ROS 2 Humble development environment** for **Windows and Linux machines** (amd based systems) for TurtleBot3 simulation and development.  
 
 It includes:
 - ROS 2 Humble preinstalled with navigation, SLAM, teleop, Gazebo, and visualization packages  
@@ -25,7 +25,7 @@ Whether you're running on Linux, macOS, or Windows, this container lets you star
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git
+git clone --branch main --single-branch https://github.com/RobotTeaching/UON-CS-robotlab-simulation-container.git
 ```
 
 ---
@@ -103,6 +103,8 @@ You can now create custom packages under `/home/ros2_ws/src/` and they will pers
 | **Permission denied: docker** | Add your user to the docker group:<br>`sudo usermod -aG docker $USER && newgrp docker` |
 | **Gazebo spawn service failed** | Don’t Ctrl+C — let it fail completely, then close and restart. |
 | **Cannot connect to noVNC** | Run `./start_novnc.sh status` to check if the container is running. |
+| **Unable to create file [..]: Filename too long on clone** | Run `git config --system core.longpaths true` in a administrator terminal. |
+
 
 ---
 
