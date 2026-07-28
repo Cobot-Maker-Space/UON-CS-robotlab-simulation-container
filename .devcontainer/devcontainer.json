@@ -1,0 +1,32 @@
+{
+    "name": "UON ROS2 Humble RobotLab",
+
+    "image": "ghcr.io/mohammad-areeb/uon-ros2:latest",
+
+    "remoteUser": "ubuntu",
+
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+    "forwardPorts": [
+        8080
+    ],
+
+    "postCreateCommand": "bash .devcontainer/setup.sh",
+
+    "containerEnv": {
+        "ROS_DOMAIN_ID": "30",
+        "ROS_LOCALHOST_ONLY": "0",
+        "TURTLEBOT3_MODEL": "waffle"
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "twxs.cmake",
+                "ms-iot.vscode-ros",
+                "eamodio.gitlens"
+            ]
+        }
+    }
+}

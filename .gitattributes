@@ -1,3 +1,0 @@
-*.sh text eol=lf
-Dockerfile text eol=lf
-setup.sh text eol=lf
