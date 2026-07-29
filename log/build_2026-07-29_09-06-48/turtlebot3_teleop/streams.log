@@ -1,0 +1,17 @@
+[5.264s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop': PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_teleop/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop/build --no-deps symlink_data
+[6.726s] running develop
+[7.570s] running egg_info
+[7.571s] writing turtlebot3_teleop.egg-info/PKG-INFO
+[7.575s] writing dependency_links to turtlebot3_teleop.egg-info/dependency_links.txt
+[7.575s] writing entry points to turtlebot3_teleop.egg-info/entry_points.txt
+[7.576s] writing requirements to turtlebot3_teleop.egg-info/requires.txt
+[7.576s] writing top-level names to turtlebot3_teleop.egg-info/top_level.txt
+[7.587s] reading manifest file 'turtlebot3_teleop.egg-info/SOURCES.txt'
+[7.592s] writing manifest file 'turtlebot3_teleop.egg-info/SOURCES.txt'
+[7.596s] running build_ext
+[7.596s] Creating /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_teleop/lib/python3.10/site-packages/turtlebot3-teleop.egg-link (link to .)
+[7.599s] Installing teleop_keyboard script to /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_teleop/lib/turtlebot3_teleop
+[7.600s] 
+[7.600s] Installed /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop
+[7.601s] running symlink_data
+[7.707s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop' returned '0': PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_teleop/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_teleop/build --no-deps symlink_data

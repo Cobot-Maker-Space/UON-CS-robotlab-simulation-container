@@ -1,0 +1,131 @@
+[0.033s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /workspaces/UON-CS-robotlab-simulation-container/src/DynamixelSDK/ros/dynamixel_sdk -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk
+[1.405s] -- The C compiler identification is GNU 11.4.0
+[1.849s] -- The CXX compiler identification is GNU 11.4.0
+[1.980s] -- Detecting C compiler ABI info
+[2.593s] -- Detecting C compiler ABI info - done
+[2.627s] -- Check for working C compiler: /usr/bin/cc - skipped
+[2.627s] -- Detecting C compile features
+[2.631s] -- Detecting C compile features - done
+[2.649s] -- Detecting CXX compiler ABI info
+[3.305s] -- Detecting CXX compiler ABI info - done
+[3.343s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[3.345s] -- Detecting CXX compile features
+[3.346s] -- Detecting CXX compile features - done
+[3.703s] -- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+[4.724s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[5.113s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[6.467s] -- Configuring done
+[6.900s] -- Generating done
+[6.933s] -- Build files have been written to: /workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk
+[6.989s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /workspaces/UON-CS-robotlab-simulation-container/src/DynamixelSDK/ros/dynamixel_sdk -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk
+[6.992s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk -- -j2 -l2
+[7.236s] [  7%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/packet_handler.cpp.o[0m
+[8.483s] [ 15%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/protocol1_packet_handler.cpp.o[0m
+[13.539s] [ 23%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/protocol2_packet_handler.cpp.o[0m
+[19.387s] [ 30%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_sync_read.cpp.o[0m
+[31.190s] [ 38%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_sync_write.cpp.o[0m
+[33.742s] [ 46%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_bulk_read.cpp.o[0m
+[38.091s] [ 53%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_bulk_write.cpp.o[0m
+[39.297s] [ 61%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_fast_bulk_read.cpp.o[0m
+[39.972s] [ 69%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_fast_sync_read.cpp.o[0m
+[40.555s] [ 76%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/group_handler.cpp.o[0m
+[41.056s] [ 84%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/port_handler.cpp.o[0m
+[41.148s] [ 92%] [32mBuilding CXX object CMakeFiles/dynamixel_sdk.dir/src/dynamixel_sdk/port_handler_linux.cpp.o[0m
+[43.187s] [100%] [32m[1mLinking CXX shared library libdynamixel_sdk.so[0m
+[43.870s] [100%] Built target dynamixel_sdk
+[44.080s] [100%] Built target ament_cmake_python_symlink_dynamixel_sdk
+[55.262s] running egg_info
+[55.276s] creating dynamixel_sdk.egg-info
+[55.279s] writing dynamixel_sdk.egg-info/PKG-INFO
+[55.280s] writing dependency_links to dynamixel_sdk.egg-info/dependency_links.txt
+[55.280s] writing top-level names to dynamixel_sdk.egg-info/top_level.txt
+[55.318s] writing manifest file 'dynamixel_sdk.egg-info/SOURCES.txt'
+[55.358s] reading manifest file 'dynamixel_sdk.egg-info/SOURCES.txt'
+[55.502s] writing manifest file 'dynamixel_sdk.egg-info/SOURCES.txt'
+[55.763s] [100%] Built target ament_cmake_python_build_dynamixel_sdk_egg
+[55.839s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk -- -j2 -l2
+[56.067s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk
+[56.181s] -- Install configuration: ""
+[56.201s] -- Execute custom install script
+[56.235s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/dynamixel_sdk.h
+[56.279s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_bulk_read.h
+[56.399s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_bulk_write.h
+[56.626s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_fast_bulk_read.h
+[56.680s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_fast_sync_read.h
+[56.741s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_handler.h
+[56.775s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_sync_read.h
+[56.822s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/group_sync_write.h
+[56.881s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/packet_handler.h
+[57.078s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/port_handler.h
+[57.129s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/port_handler_arduino.h
+[57.229s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/port_handler_linux.h
+[57.306s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/port_handler_mac.h
+[57.410s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/port_handler_windows.h
+[57.631s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/protocol1_packet_handler.h
+[57.749s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/include//dynamixel_sdk/protocol2_packet_handler.h
+[57.852s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/pythonpath.sh
+[57.930s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/pythonpath.dsv
+[57.990s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk-3.8.4-py3.10.egg-info/PKG-INFO
+[58.147s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk-3.8.4-py3.10.egg-info/SOURCES.txt
+[58.260s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk-3.8.4-py3.10.egg-info/dependency_links.txt
+[58.368s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk-3.8.4-py3.10.egg-info/top_level.txt
+[58.448s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/__init__.py
+[58.490s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_bulk_read.cpp
+[58.516s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_bulk_read.py
+[58.559s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_bulk_write.cpp
+[58.624s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_bulk_write.py
+[58.724s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_fast_bulk_read.cpp
+[58.787s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_fast_sync_read.cpp
+[58.855s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_handler.cpp
+[58.952s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_sync_read.cpp
+[59.130s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_sync_read.py
+[59.292s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_sync_write.cpp
+[59.451s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_sync_write.py
+[59.526s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/packet_handler.cpp
+[59.591s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/packet_handler.py
+[59.684s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler.cpp
+[59.877s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler.py
+[59.967s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler_arduino.cpp
+[60.034s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler_linux.cpp
+[60.073s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler_mac.cpp
+[60.127s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler_windows.cpp
+[60.194s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/protocol1_packet_handler.cpp
+[60.236s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/protocol1_packet_handler.py
+[60.299s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/protocol2_packet_handler.cpp
+[60.373s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/protocol2_packet_handler.py
+[60.439s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/robotis_def.py
+[60.507s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/library_path.sh
+[60.636s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/library_path.dsv
+[60.722s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/ament_index/resource_index/package_run_dependencies/dynamixel_sdk
+[60.772s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/ament_index/resource_index/parent_prefix_path/dynamixel_sdk
+[60.859s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/ament_prefix_path.sh
+[60.878s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/ament_prefix_path.dsv
+[60.928s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/path.sh
+[60.998s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/environment/path.dsv
+[61.071s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/local_setup.bash
+[61.142s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/local_setup.sh
+[61.217s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/local_setup.zsh
+[61.296s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/local_setup.dsv
+[61.440s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/package.dsv
+[61.476s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/ament_index/resource_index/packages/dynamixel_sdk
+[61.510s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/ament_cmake_export_targets-extras.cmake
+[61.560s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/ament_cmake_export_include_directories-extras.cmake
+[61.621s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/ament_cmake_export_libraries-extras.cmake
+[61.752s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/dynamixel_sdkConfig.cmake
+[61.904s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/dynamixel_sdkConfig-version.cmake
+[62.156s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/package.xml
+[62.289s] -- Installing: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib/libdynamixel_sdk.so
+[63.403s] Listing '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk'...
+[63.403s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/__init__.py'...
+[63.403s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_bulk_read.py'...
+[63.403s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_bulk_write.py'...
+[63.403s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_sync_read.py'...
+[63.406s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/group_sync_write.py'...
+[63.406s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/packet_handler.py'...
+[63.406s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/port_handler.py'...
+[63.407s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/protocol1_packet_handler.py'...
+[63.407s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/protocol2_packet_handler.py'...
+[63.409s] Compiling '/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages/dynamixel_sdk/robotis_def.py'...
+[63.423s] -- Installing: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/dynamixel_sdkExport.cmake
+[63.532s] -- Installing: /workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/dynamixel_sdkExport-noconfig.cmake
+[65.195s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /workspaces/UON-CS-robotlab-simulation-container/build/dynamixel_sdk

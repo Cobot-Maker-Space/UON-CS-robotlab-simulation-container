@@ -1,0 +1,87 @@
+[0.051s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node': AMENT_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:/opt/ros/humble LD_LIBRARY_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/lib:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib:${LD_LIBRARY_PATH} PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/local/lib/python3.10/dist-packages:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake /workspaces/UON-CS-robotlab-simulation-container/src/turtlebot3/turtlebot3_node -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node
+[0.451s] -- The C compiler identification is GNU 11.4.0
+[0.657s] -- The CXX compiler identification is GNU 11.4.0
+[0.690s] -- Detecting C compiler ABI info
+[1.054s] -- Detecting C compiler ABI info - done
+[1.069s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.070s] -- Detecting C compile features
+[1.070s] -- Detecting C compile features - done
+[1.075s] -- Detecting CXX compiler ABI info
+[1.336s] -- Detecting CXX compiler ABI info - done
+[1.348s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.348s] -- Detecting CXX compile features
+[1.349s] -- Detecting CXX compile features - done
+[1.358s] -- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+[1.849s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[2.141s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[2.260s] -- Found dynamixel_sdk: 3.8.4 (/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake)
+[2.278s] -- Found geometry_msgs: 4.9.1 (/opt/ros/humble/share/geometry_msgs/cmake)
+[2.525s] -- Found rosidl_generator_c: 3.1.8 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[2.652s] -- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[2.681s] -- Found rosidl_generator_cpp: 3.1.8 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[2.747s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[2.808s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.963s] -- Found message_filters: 4.3.16 (/opt/ros/humble/share/message_filters/cmake)
+[3.373s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[3.392s] -- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[3.882s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[3.995s] -- Found FastRTPS: /opt/ros/humble/include  
+[4.278s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[4.330s] -- Looking for pthread.h
+[4.749s] -- Looking for pthread.h - found
+[4.759s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[4.978s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[4.984s] -- Found Threads: TRUE  
+[5.143s] -- Found nav_msgs: 4.9.1 (/opt/ros/humble/share/nav_msgs/cmake)
+[5.442s] -- Found sensor_msgs: 4.9.1 (/opt/ros/humble/share/sensor_msgs/cmake)
+[5.556s] -- Found std_srvs: 4.9.1 (/opt/ros/humble/share/std_srvs/cmake)
+[5.623s] -- Found tf2: 0.25.20 (/opt/ros/humble/share/tf2/cmake)
+[5.678s] -- Found tf2_ros: 0.25.20 (/opt/ros/humble/share/tf2_ros/cmake)
+[6.172s] -- Found turtlebot3_msgs: 2.4.0 (/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/share/turtlebot3_msgs/cmake)
+[6.523s] -- Configuring done
+[7.006s] -- Generating done
+[7.055s] -- Build files have been written to: /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node
+[7.120s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node' returned '0': AMENT_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:/opt/ros/humble LD_LIBRARY_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/lib:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib:${LD_LIBRARY_PATH} PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/local/lib/python3.10/dist-packages:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake /workspaces/UON-CS-robotlab-simulation-container/src/turtlebot3/turtlebot3_node -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node
+[7.120s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node': AMENT_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:/opt/ros/humble LD_LIBRARY_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/lib:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib:${LD_LIBRARY_PATH} PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/local/lib/python3.10/dist-packages:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node -- -j2 -l2
+[7.369s] [  7%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/devices/motor_power.cpp.o[0m
+[25.304s] [ 14%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/devices/sound.cpp.o[0m
+[41.364s] [ 21%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/devices/reset.cpp.o[0m
+[58.926s] [ 28%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/diff_drive_controller.cpp.o[0m
+[79.127s] [ 35%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/dynamixel_sdk_wrapper.cpp.o[0m
+[82.065s] [ 42%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/odometry.cpp.o[0m
+[127.875s] [ 50%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/turtlebot3.cpp.o[0m
+[172.929s] [ 57%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/sensors/battery_state.cpp.o[0m
+[187.150s] [ 64%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/sensors/imu.cpp.o[0m
+[202.697s] [ 71%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/sensors/joint_state.cpp.o[0m
+[215.887s] [ 78%] [32mBuilding CXX object CMakeFiles/turtlebot3_node_lib.dir/src/sensors/sensor_state.cpp.o[0m
+[228.282s] [ 85%] [32m[1mLinking CXX static library libturtlebot3_node_lib.a[0m
+[230.992s] [ 85%] Built target turtlebot3_node_lib
+[231.083s] [ 92%] [32mBuilding CXX object CMakeFiles/turtlebot3_ros.dir/src/node_main.cpp.o[0m
+[243.286s] [100%] [32m[1mLinking CXX executable turtlebot3_ros[0m
+[251.093s] [100%] Built target turtlebot3_ros
+[251.136s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node' returned '0': AMENT_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:/opt/ros/humble LD_LIBRARY_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/lib:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib:${LD_LIBRARY_PATH} PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/local/lib/python3.10/dist-packages:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node -- -j2 -l2
+[251.147s] Invoking command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node': AMENT_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:/opt/ros/humble LD_LIBRARY_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/lib:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib:${LD_LIBRARY_PATH} PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/local/lib/python3.10/dist-packages:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --install /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node
+[251.182s] -- Install configuration: ""
+[251.184s] -- Execute custom install script
+[251.187s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/param/burger.yaml
+[251.217s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/param/waffle.yaml
+[251.233s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/param/waffle_pi.yaml
+[251.266s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/lib/turtlebot3_node/turtlebot3_ros
+[251.302s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/ament_index/resource_index/package_run_dependencies/turtlebot3_node
+[251.339s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/ament_index/resource_index/parent_prefix_path/turtlebot3_node
+[251.377s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/environment/ament_prefix_path.sh
+[251.415s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/environment/ament_prefix_path.dsv
+[251.436s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/environment/path.sh
+[251.449s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/environment/path.dsv
+[251.479s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/local_setup.bash
+[251.485s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/local_setup.sh
+[251.502s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/local_setup.zsh
+[251.520s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/local_setup.dsv
+[251.532s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/package.dsv
+[251.544s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/ament_index/resource_index/packages/turtlebot3_node
+[251.606s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/cmake/ament_cmake_export_dependencies-extras.cmake
+[251.723s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/cmake/ament_cmake_export_include_directories-extras.cmake
+[251.743s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/cmake/turtlebot3_nodeConfig.cmake
+[251.765s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/cmake/turtlebot3_nodeConfig-version.cmake
+[251.799s] -- Symlinking: /workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_node/share/turtlebot3_node/package.xml
+[251.815s] Invoked command in '/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node' returned '0': AMENT_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk:/opt/ros/humble LD_LIBRARY_PATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/lib:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib:${LD_LIBRARY_PATH} PYTHONPATH=/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3_msgs/local/lib/python3.10/dist-packages:/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --install /workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3_node
