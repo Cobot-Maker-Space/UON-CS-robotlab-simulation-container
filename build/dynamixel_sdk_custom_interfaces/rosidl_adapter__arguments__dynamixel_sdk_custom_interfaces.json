@@ -1,7 +1,0 @@
-{
-  "package_name": "dynamixel_sdk_custom_interfaces",
-  "non_idl_tuples": [
-    "/workspaces/UON-CS-robotlab-simulation-container/src/DynamixelSDK/ros/dynamixel_sdk_custom_interfaces:msg/SetPosition.msg",
-    "/workspaces/UON-CS-robotlab-simulation-container/src/DynamixelSDK/ros/dynamixel_sdk_custom_interfaces:srv/GetPosition.srv"
-  ]
-}

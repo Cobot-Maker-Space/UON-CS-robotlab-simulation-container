@@ -1,1 +1,0 @@
-/workspaces/UON-CS-robotlab-simulation-container/src/turtlebot3_simulations/turtlebot3_manipulation_gazebo/launch/turtlebot3_home_service_challenge.launch.py

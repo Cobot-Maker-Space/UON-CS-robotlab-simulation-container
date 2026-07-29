@@ -1,3 +1,0 @@
-/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/lib/libdynamixel_sdk.so
-/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/dynamixel_sdkExport.cmake
-/workspaces/UON-CS-robotlab-simulation-container/install/dynamixel_sdk/share/dynamixel_sdk/cmake/dynamixel_sdkExport-noconfig.cmake

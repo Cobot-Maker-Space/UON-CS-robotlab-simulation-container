@@ -1,1 +1,0 @@
-/workspaces/UON-CS-robotlab-simulation-container/src/turtlebot3_msgs/msg/SensorState.msg

@@ -1,1 +1,0 @@
-/workspaces/UON-CS-robotlab-simulation-container/build/turtlebot3/ament_cmake_environment_hooks/local_setup.zsh

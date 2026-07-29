@@ -1,1 +1,0 @@
-/workspaces/UON-CS-robotlab-simulation-container/src/DynamixelSDK/ros/dynamixel_sdk/include/dynamixel_sdk/group_bulk_write.h
