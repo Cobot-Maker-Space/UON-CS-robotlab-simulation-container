@@ -12,12 +12,17 @@
     ],
 
     "postCreateCommand": "bash .devcontainer/setup.sh",
+    "postStartCommand": "bash .devcontainer/start-gui.sh",
 
     "containerEnv": {
         "ROS_DOMAIN_ID": "30",
         "ROS_LOCALHOST_ONLY": "0",
-        "TURTLEBOT3_MODEL": "waffle"
+        "TURTLEBOT3_MODEL": "waffle",
+        "DISPLAY": ":1"
     },
+    "hostRequirements": {
+    "cpus": 4
+},
 
     "customizations": {
         "vscode": {

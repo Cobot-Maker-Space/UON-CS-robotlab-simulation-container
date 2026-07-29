@@ -1,0 +1,15 @@
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/ament_index/resource_index/package_run_dependencies/turtlebot3
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/ament_index/resource_index/parent_prefix_path/turtlebot3
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/environment/ament_prefix_path.sh
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/environment/ament_prefix_path.dsv
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/environment/path.sh
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/environment/path.dsv
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/local_setup.bash
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/local_setup.sh
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/local_setup.zsh
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/local_setup.dsv
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/package.dsv
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/ament_index/resource_index/packages/turtlebot3
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/cmake/turtlebot3Config.cmake
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/cmake/turtlebot3Config-version.cmake
+/workspaces/UON-CS-robotlab-simulation-container/install/turtlebot3/share/turtlebot3/package.xml
