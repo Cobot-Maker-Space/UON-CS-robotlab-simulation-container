@@ -1,0 +1,18 @@
+# colcon build artifacts
+build/
+install/
+log/
+
+# ROS2 / colcon extras
+.colcon_install_lock
+COLCON_IGNORE
+
+# Editor/OS cruft
+.vscode/ipch/
+*.pyc
+__pycache__/
+.DS_Store
+
+# The cache/ directory in your listing — check what's in it;
+# if it's colcon's or your VNC session cache, ignore it too:
+cache/
