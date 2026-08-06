@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# start_novnc.sh — idempotent helper for the "ros" network + noVNC container
+# start_vnc.sh — idempotent helper for the "ros" network + noVNC container
 set -euo pipefail
 
 # --- Config (override via env vars) ---

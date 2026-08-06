@@ -70,8 +70,8 @@ It includes:
 
    ```bash
    cd ~/UON-CS-robotlab-simulation-container/src/.devcontainer/
-   chmod +x start_novnc.sh
-   ./start_novnc.sh start
+   chmod +x start_vnc.sh
+   ./start_vnc.sh start
    ```
 
    This will:
@@ -82,12 +82,16 @@ It includes:
 
    ➡ `http://localhost:8080/vnc.html` and click **Connect** to access the container's desktop GUI.
 
-7. Open in VS Code
+7. Open the `src` folder in VS Code
 
-   From the same WSL2 terminal, launch VS Code attached to WSL:
+   > ⚠️ Open **`src`**, not the repo root and not `.devcontainer`. `devcontainer.json` lives at
+   > `src/.devcontainer/`, so VS Code only discovers it when `src` is the folder you opened, and the
+   > cache mounts are resolved relative to it.
+
+   From the same WSL2 terminal (still inside `.devcontainer/`), launch VS Code attached to WSL:
 
    ```bash
-   code .
+   code ..
    ```
 
    Then press `Ctrl+Shift+P` → select:
@@ -112,10 +116,11 @@ It includes:
 | Issue | Solution |
 |---|---|
 | `docker` command not found / permission denied in WSL2 | Confirm Docker Desktop's WSL Integration is enabled for your Ubuntu distro (**Settings → Resources → WSL Integration**). Unlike native Linux, you do **not** need to add your user to a `docker` group — Docker Desktop handles this. |
-| `start_novnc.sh: bad interpreter: /bin/bash^M` | The script has Windows (CRLF) line endings. Run `dos2unix start_novnc.sh` inside WSL2, or re-clone after setting `git config --global core.autocrlf input` (see step 4). |
+| `start_vnc.sh: bad interpreter: /bin/bash^M` | The script has Windows (CRLF) line endings. Run `dos2unix start_vnc.sh` inside WSL2, or re-clone after setting `git config --global core.autocrlf input` (see step 4). The repo's `.gitattributes` already forces LF on `*.sh`, so this should not normally happen. |
 | Gazebo spawn service failed | Don't Ctrl+C — let it fail completely, then close and restart. |
-| Cannot connect to noVNC | Run `./start_novnc.sh status` to check if the container is running. |
-| Webcam (`/dev/video0`) not accessible | `/dev/video0` is a Linux device path with no Windows equivalent through Docker Desktop's WSL2 backend. Passing a USB webcam through requires [usbipd-win](https://github.com/dorssel/usbipd-win) to attach the device into WSL2 first. If you don't need real camera hardware, remove `--device=/dev/video0` and `--group-add=video` from `devcontainer.json`'s `runArgs`. |
+| Cannot connect to noVNC | Run `./start_vnc.sh status` to check if the container is running. |
+| **Reopen in Container** isn't offered in the command palette | You opened the wrong folder — VS Code must have **`src`** open, since `devcontainer.json` lives at `src/.devcontainer/`. See step 7. |
+| Webcam (`/dev/video0`) not accessible | `--device=/dev/video0` is **removed by default on this Windows branch**, because Docker Desktop's Linux VM has no such device and the flag makes container creation fail outright. To use a real USB webcam, attach it into the VM with [usbipd-win](https://github.com/dorssel/usbipd-win) first, then re-add the flag to `devcontainer.json`'s `runArgs`. |
 | `Unable to create file [..]: Filename too long` on clone | Run `git config --global core.longpaths true` (see step 4). |
 | Dev container build is very slow / VS Code feels laggy | Make sure the repo was cloned inside the WSL2 filesystem (e.g. `~/...`), not under `/mnt/c/...` or a Windows path opened via Remote-WSL. Cross-filesystem bind mounts are slow. |
 

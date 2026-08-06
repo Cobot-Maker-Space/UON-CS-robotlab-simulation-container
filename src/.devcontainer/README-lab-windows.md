@@ -34,14 +34,16 @@ This is the part that needs elevation. Do it once when imaging/deploying the lab
    ```powershell
    Add-LocalGroupMember -Group "docker-users" -Member "DOMAIN\Students"
    ```
-3. Install **Visual Studio Code** with the **Dev Containers** extension. VS Code and its
-   extensions can also be installed per-user without admin if you'd rather have students (or a
-   login script) do this step.
-4. (Recommended) Set long-path support once at the machine level so clones never fail on deep
-   paths:
+3. Install **Visual Studio Code** with the **Dev Containers** extension, and **Git for Windows**.
+   VS Code and its extensions can also be installed per-user without admin if you'd rather have
+   students (or a login script) do this step.
+4. (Optional) Set long-path support machine-wide so students don't have to:
    ```powershell
    git config --system core.longpaths true
    ```
+   This is **optional** — the student instructions below use `git config --global`, which achieves
+   the same thing per-user and needs **no admin rights**. Setting it at the system level just saves
+   students one command.
 5. (Recommended) If Group Policy locks PowerShell's script execution policy, either sign
    `start_vnc.ps1` for your environment or confirm `-ExecutionPolicy Bypass` (used below) is
    permitted for standard users under your GPO. Bypass only affects the one process running the
@@ -54,7 +56,17 @@ Once these steps are done, everything below runs as a standard, non-admin studen
 
 ## 🔧 Student instructions
 
-### 1. Clone the repository
+### 1. Configure Git, then clone the repository
+
+This repo contains a pre-built `cache/` tree whose deepest path is ~271 characters, which exceeds
+the classic Windows 260-character `MAX_PATH` limit. **Run this once before cloning** — it is a
+per-user setting and needs **no admin rights**:
+
+```powershell
+git config --global core.longpaths true
+```
+
+Then clone:
 
 ```powershell
 git clone https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git
@@ -63,6 +75,11 @@ cd UON-CS-robotlab-simulation-container
 
 No specific folder matters here the way it does for WSL2 — there's no cross-filesystem
 performance penalty on native Windows, so the default location (e.g. `Documents\`) is fine.
+Keep the path reasonably short, though, since it is added on top of that 271 characters.
+
+Line endings need no configuration: the repo's `.gitattributes` already forces LF on `*.sh` and
+`Dockerfile`, so the scripts that run inside the Linux container stay valid regardless of your
+local `core.autocrlf` setting.
 
 ### 2. Start the noVNC service
 
@@ -73,7 +90,9 @@ powershell -ExecutionPolicy Bypass -File .\start_vnc.ps1 start
 
 This will:
 - Create a `ros` Docker network if it doesn't exist
-- Launch a `theasp/novnc:latest` container mapped to `http://localhost:8080`
+- Pull `theasp/novnc:latest` if it isn't cached yet (**first run only — a few hundred MB, so give
+  it a few minutes**; the script prints a message while it downloads)
+- Launch the noVNC container mapped to `http://localhost:8080`
 
 Other commands work the same way: `... start_vnc.ps1 stop`, `status`, `restart`.
 
@@ -81,16 +100,29 @@ Once running, open:
 
 ➡ **http://localhost:8080/vnc.html** and click **Connect** to access the container's desktop GUI.
 
-### 3. Open in VS Code
+### 3. Open the `src` folder in VS Code
+
+> ⚠️ **This must be the `src` folder — not the repo root, and not `.devcontainer`.**
+> `devcontainer.json` lives at `src/.devcontainer/`, and VS Code only discovers it when `src` is the
+> folder you opened. It also resolves the build/install/log cache mounts relative to that folder.
+> Open the repo root and **Reopen in Container** won't be offered at all; open `.devcontainer` and
+> the container comes up with the wrong folders mounted.
+
+From `src\.devcontainer\` (where step 2 left you):
 
 ```powershell
-code .
+code ..
 ```
+
+Or from anywhere: `code <path-to-repo>\src`
 
 Press `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**. VS Code builds and launches the
 ROS 2 container and attaches it to the `ros` network so it can reach the noVNC container —
 identical to the Linux/WSL2 flow from here on, since the container itself never knows or cares
 what host OS it's running under.
+
+The first build compiles the whole ROS 2 workspace via `postCreateCommand` (`colcon build
+--symlink-install`) and takes a long time. Let it finish.
 
 ### 4. Test the setup
 
@@ -113,8 +145,11 @@ ros2 topic list
 | Permission/pipe error running `docker ps` | The student account isn't in the local `docker-users` group — an IT-side fix (see one-time setup above). |
 | Cannot connect to noVNC | Run `powershell -ExecutionPolicy Bypass -File .\start_vnc.ps1 status` to check if the container is running. |
 | Gazebo spawn service failed | Don't Ctrl+C — let it fail completely, then close and restart. |
-| Webcam (`/dev/video0`) not accessible | There's no Windows equivalent of this Linux device path through Docker Desktop. If lab PCs don't have/need a camera, remove `--device=/dev/video0` and `--group-add=video` from `devcontainer.json`'s `runArgs`. |
-| `Unable to create file [..]: Filename too long` on clone | Needs `git config --system core.longpaths true`, which requires admin — set this once during imaging (see one-time setup above), since students can't run it themselves. |
+| **Reopen in Container** isn't offered in the command palette | You opened the wrong folder. VS Code must have **`src`** open, because `devcontainer.json` lives at `src/.devcontainer/`. See step 3. |
+| `error gathering device information while adding custom device "/dev/video0": no such file or directory` | Something re-added `--device=/dev/video0` to `devcontainer.json`'s `runArgs`. Docker Desktop's Linux VM has no `/dev/video0`, so the container can never start with that flag. It is removed by default on this branch — leave it out. |
+| Webcam not accessible inside the container | Expected on Windows. Passing a real USB camera through requires [usbipd-win](https://github.com/dorssel/usbipd-win) to attach the device into Docker Desktop's VM first, which needs admin. Lab PCs are set up without camera passthrough. |
+| `The string is missing the terminator: "` when running `start_vnc.ps1` | The file lost its UTF-8 BOM and picked up a non-ASCII character (typically an em dash pasted from a doc). Windows PowerShell 5.1 then decodes it as ANSI, producing a `”` that it treats as a real string delimiter — so the reported line number is meaningless. Re-checkout the file with `git checkout -- start_vnc.ps1`. If you must edit it, keep it pure ASCII and save as **UTF-8 with BOM**. |
+| `Unable to create file [..]: Filename too long` on clone | Run `git config --global core.longpaths true` and clone again (step 1). This is a per-user setting and needs **no admin rights**. |
 | Host port 8080 already in use | Another process (or a leftover container) is bound to it. Run `... start_vnc.ps1 status`, or set `$env:HOST_PORT = "9000"` before calling `start_vnc.ps1 start` to use a different port. |
 
 ---

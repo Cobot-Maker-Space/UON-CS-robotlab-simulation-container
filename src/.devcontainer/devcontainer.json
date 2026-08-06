@@ -34,7 +34,13 @@
     "runArgs": [
     // "--net=host",
      "--network=ros",
-    "--device=/dev/video0",
+    // "--device=/dev/video0" is intentionally NOT set on Windows.
+    // Docker Desktop runs containers inside its own hidden Linux VM, which has no /dev/video0
+    // unless a USB camera has been attached into it with usbipd-win. With the flag present,
+    // container creation fails outright and "Reopen in Container" never starts:
+    //   docker: Error response from daemon: error gathering device information while adding
+    //   custom device "/dev/video0": no such file or directory
+    // Re-enable it only on native Linux hosts, or after attaching a camera via usbipd-win.
     "--group-add=video"
 ],
 
