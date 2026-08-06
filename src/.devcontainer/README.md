@@ -10,6 +10,11 @@ It includes:
 
 > ℹ️ **Why WSL2?** Docker Desktop for Windows requires the WSL2 backend to run Linux containers. Rather than porting the shell scripts to PowerShell, this branch runs everything inside a real Ubuntu (WSL2) shell, which behaves identically to native Linux — no rewritten commands needed.
 
+Run this for git to download files with long paths in Windows Directories
+```powershell
+git config --global core.longpaths true
+```
+
 📦 Prerequisites
 
 - Windows 10 (2004+) or Windows 11
