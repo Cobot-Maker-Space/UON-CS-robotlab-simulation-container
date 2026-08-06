@@ -10,6 +10,12 @@ It includes:
 
 Whether you're running on Linux, macOS, or Windows, this container lets you start working with TurtleBot development in minutes.
 
+> 🪟 **On Windows?** This root doc assumes a bash-compatible shell (Linux, macOS, or WSL2). If
+> you're setting up your own machine with WSL2, see [src/.devcontainer/README.md](src/.devcontainer/README.md).
+> If you're deploying to shared lab PCs where students log in without admin rights, see
+> [src/.devcontainer/README-lab-windows.md](src/.devcontainer/README-lab-windows.md) — it uses a
+> native PowerShell script instead of WSL2/bash.
+
 ---
 
 ## 📦 Prerequisites

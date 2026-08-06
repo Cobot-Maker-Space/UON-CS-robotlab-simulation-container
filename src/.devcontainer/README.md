@@ -8,7 +8,11 @@ It includes:
 - Integrated noVNC support for GUI access from your browser
 - Persistent build and install caches for faster rebuilds
 
-> ℹ️ **Why WSL2?** Docker Desktop for Windows requires the WSL2 backend to run Linux containers. Rather than porting the shell scripts to PowerShell, this branch runs everything inside a real Ubuntu (WSL2) shell, which behaves identically to native Linux — no rewritten commands needed.
+> ℹ️ **Why WSL2?** Docker Desktop for Windows requires the WSL2 backend to run Linux containers. This doc runs everything inside a real Ubuntu (WSL2) shell, which behaves identically to native Linux — no rewritten commands needed.
+>
+> **Deploying to shared lab PCs where students have no admin rights?** See
+> [README-lab-windows.md](README-lab-windows.md) instead — it uses a native `start_vnc.ps1`
+> PowerShell script so students never need to open a WSL shell.
 
 📦 Prerequisites
 
