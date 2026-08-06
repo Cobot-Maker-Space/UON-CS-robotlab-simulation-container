@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Idempotent helper for the "ros" Docker network + noVNC container - native Windows PowerShell edition.
 
