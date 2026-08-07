@@ -1,3 +1,12 @@
+# Scripts that run INSIDE the Linux container must have LF endings. A CRLF shebang produces
+# "bad interpreter: /bin/bash^M" and breaks container startup.
 *.sh text eol=lf
 Dockerfile text eol=lf
 setup.sh text eol=lf
+robotlab-rebuild text eol=lf
+
+# Scripts that run on the Windows HOST. CRLF is what cmd.exe and PowerShell expect; an LF-only
+# batch file can misbehave around labels and goto.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf

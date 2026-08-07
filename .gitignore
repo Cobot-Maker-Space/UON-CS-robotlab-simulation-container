@@ -1,0 +1,13 @@
+# Colcon build artefacts.
+#
+# These used to be committed (3,995 files, 221 MB, deepest path 271 chars), which is what
+# forced every Windows user to set `git config core.longpaths true` before cloning. They were
+# also deleted on every container create by the old setup.sh, so they never once served as a
+# cache. The dev container now keeps build/install/log in per-user Docker named volumes
+# (see src/.devcontainer/devcontainer.json), seeded from the prebuilt image.
+cache/
+
+# A colcon build run directly on the host rather than in the container.
+/build/
+/install/
+/log/

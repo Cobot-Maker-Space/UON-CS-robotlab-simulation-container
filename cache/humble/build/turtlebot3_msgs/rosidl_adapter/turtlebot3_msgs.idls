@@ -1,7 +1,0 @@
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:msg/SensorState.idl
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:msg/Sound.idl
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:msg/VersionInfo.idl
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:srv/Sound.idl
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:srv/Dqn.idl
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:srv/Goal.idl
-/home/ros2_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs:action/Patrol.idl

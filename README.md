@@ -12,9 +12,13 @@ Whether you're running on Linux, macOS, or Windows, this container lets you star
 
 > 🪟 **On Windows?** This root doc assumes a bash-compatible shell (Linux, macOS, or WSL2). If
 > you're setting up your own machine with WSL2, see [src/.devcontainer/README.md](src/.devcontainer/README.md).
-> If you're deploying to shared lab PCs where students log in without admin rights, see
-> [src/.devcontainer/README-lab-windows.md](src/.devcontainer/README-lab-windows.md) — it uses a
-> native PowerShell script instead of WSL2/bash.
+>
+> 🏫 **Deploying to shared lab PCs?** See
+> [src/.devcontainer/README-lab-windows.md](src/.devcontainer/README-lab-windows.md). Students there
+> don't follow the steps below at all — IT prepares the machine once with
+> [launcher/Install-RobotLab.ps1](launcher/Install-RobotLab.ps1), and students then double-click a
+> single **Robot Lab** shortcut that brings everything up and opens VS Code already attached to the
+> container.
 
 ---
 
@@ -109,7 +113,7 @@ You can now create custom packages under `/home/ros2_ws/src/` and they will pers
 | **Permission denied: docker** | Add your user to the docker group:<br>`sudo usermod -aG docker $USER && newgrp docker` |
 | **Gazebo spawn service failed** | Don’t Ctrl+C — let it fail completely, then close and restart. |
 | **Cannot connect to noVNC** | Run `./start_novnc.sh status` to check if the container is running. |
-| **Unable to create file [..]: Filename too long on clone** | Run `git config --system core.longpaths true` in a administrator terminal. |
+| **Unable to create file [..]: Filename too long on clone** | Should no longer happen — the committed `cache/` tree that caused it (271-character paths) is no longer tracked. If you hit it on an old clone, run `git config --global core.longpaths true` (per-user, no admin needed) and re-clone. |
 | **ASLA error** or any other gazebo error | Press `Ctrl + Shift + P`, choose `Reopen folder locally` and then again `Ctrl + Shift + P` and mow choose `Rebuild and Reopen in container` |
 
 
@@ -117,7 +121,7 @@ You can now create custom packages under `/home/ros2_ws/src/` and they will pers
 
 ## 💡 Notes
 
-- Default user inside container: `team-beta`
+- Default user inside container: `team`
 - Workspace is mounted to `/home/ros2_ws/src`
 - Network: `ros` (shared between devcontainer and noVNC container)
 - GUI apps (RViz2, Gazebo) accessible via **browser** at `http://localhost:8080/vnc.html`

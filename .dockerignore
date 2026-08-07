@@ -1,0 +1,19 @@
+# The image build context is the repository root (see src/.devcontainer/Dockerfile).
+# Keep it small - everything here would otherwise be uploaded to the builder on every build.
+
+.git/
+.github/
+
+# Host-side Windows launcher. Never needed inside a Linux container.
+launcher/
+
+# Untracked locally but may still exist on a maintainer's disk from before it was removed from
+# git. 221 MB of stale colcon output that must not end up in the image.
+cache/
+
+# A colcon build run on the host rather than in the container.
+/build/
+/install/
+/log/
+
+*.md

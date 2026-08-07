@@ -1,166 +1,153 @@
-# 🐢 TurtleBot Desktop Development Container — Windows Lab Deployment (no WSL, no admin)
+# 🐢 Robot Lab — Windows lab PC deployment
 
-This doc is for **lab PCs** where students log in with a **non-admin account**. It uses the
-native Windows `start_vnc.ps1` script instead of `start_vnc.sh`, so nobody needs to open a WSL
-Ubuntu shell or touch anything that requires elevation at run time.
+For **shared lab PCs** where students log in with a **non-admin account**.
 
-If you're setting this up on your own machine and are happy using WSL2, use
-[README.md](README.md) instead — that flow still works and is unaffected by this one.
+IT prepares the machine once. After that a student double-clicks one shortcut and gets the full
+TurtleBot3 environment: Gazebo and RViz in a browser tab, VS Code already attached to the ROS 2
+container, and their own private workspace.
 
----
+No git, no PowerShell, no `Ctrl+Shift+P`, and no waiting for a build.
 
-## How the two Windows paths differ
-
-| | [README.md](README.md) (WSL2) | This doc (native PowerShell) |
-|---|---|---|
-| Where you run commands | Ubuntu shell inside WSL2 | Plain Windows PowerShell |
-| Script used | `start_vnc.sh` | `start_vnc.ps1` |
-| Requires a WSL Linux distro visible to the user | Yes | No |
-| Good fit for | Your own dev machine | Shared/lab PCs, non-admin student accounts |
-
-Either way, Docker Desktop is doing the same thing under the hood (it always runs containers
-inside its own hidden Linux VM). The difference is only which shell the *student* types into.
+> Setting up your **own** machine rather than a lab PC? Use [README.md](README.md) (WSL2) or the
+> root [README.md](../../README.md) (Linux/macOS). Both still work and are unaffected by this.
 
 ---
 
-## 📦 One-time setup (done by IT/lab staff, requires admin — not by students)
+## 📦 One-time setup — IT / lab staff, needs admin
 
-This is the part that needs elevation. Do it once when imaging/deploying the lab machines:
+Open **PowerShell as administrator** on the machine image and run:
 
-1. Install **Docker Desktop for Windows** with the WSL2 backend enabled. This silently pulls in
-   the WSL2 platform components; students never need to see or open a WSL distro.
-2. Add the student login group (e.g. a domain "Students" group, or "Authenticated Users") to the
-   local **`docker-users`** group, so non-admin accounts can talk to the Docker engine:
-   ```powershell
-   Add-LocalGroupMember -Group "docker-users" -Member "DOMAIN\Students"
-   ```
-3. Install **Visual Studio Code** with the **Dev Containers** extension, and **Git for Windows**.
-   VS Code and its extensions can also be installed per-user without admin if you'd rather have
-   students (or a login script) do this step.
-4. (Optional) Set long-path support machine-wide so students don't have to:
-   ```powershell
-   git config --system core.longpaths true
-   ```
-   This is **optional** — the student instructions below use `git config --global`, which achieves
-   the same thing per-user and needs **no admin rights**. Setting it at the system level just saves
-   students one command.
-5. (Recommended) If Group Policy locks PowerShell's script execution policy, either sign
-   `start_vnc.ps1` for your environment or confirm `-ExecutionPolicy Bypass` (used below) is
-   permitted for standard users under your GPO. Bypass only affects the one process running the
-   script — it does not change any system-wide setting and does not require admin rights — but a
-   sufficiently strict GPO can still block it, so verify this once on a representative lab image.
+```powershell
+git clone --branch lab-testing-windows https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git C:\Temp\robotlab
+powershell -ExecutionPolicy Bypass -File C:\Temp\robotlab\launcher\Install-RobotLab.ps1 -StudentGroup "DOMAIN\Students"
+```
 
-Once these steps are done, everything below runs as a standard, non-admin student.
+That script is idempotent — re-run it any time to update a machine. It:
+
+1. Verifies **Docker Desktop**, **VS Code** and **Git** are installed
+   (add `-InstallMissing` to attempt them via `winget`)
+2. Adds your student group to the local **`docker-users`** group, so non-admins can use Docker
+3. Clones the repo to `C:\ProgramData\RobotLab\repo`
+4. **Pre-pulls both container images (~2.6 GB)** — the step that must never happen for the first
+   time in front of a class
+5. Creates the `ros` Docker network
+6. Puts a **Robot Lab** shortcut on the all-users desktop and in the Start menu
+
+### Two things the installer cannot do for you
+
+- **The VS Code Dev Containers extension installs per user.** Push it to every student account via
+  a login script or GPO:
+  ```powershell
+  code --install-extension ms-vscode-remote.remote-containers
+  ```
+  The launcher checks for it and prints this exact command if it is missing, so a student is never
+  left guessing.
+- **Docker Desktop must be running** before a student launches. Set it to start on login.
+
+### Verify before a class
+
+Log in as a **real student account** — not an admin one — and run **Robot Lab - Check** from the
+Start menu. It runs every preflight check and reports what is wrong. Then double-click **Robot Lab**
+once and confirm it comes all the way up.
 
 ---
 
 ## 🔧 Student instructions
 
-### 1. Configure Git, then clone the repository
+Double-click **Robot Lab** on the desktop.
 
-This repo contains a pre-built `cache/` tree whose deepest path is ~271 characters, which exceeds
-the classic Windows 260-character `MAX_PATH` limit. **Run this once before cloning** — it is a
-per-user setting and needs **no admin rights**:
+The first launch takes about a minute while your personal copy of the workspace is created. After
+that it is a few seconds. Two things open:
 
-```powershell
-git config --global core.longpaths true
-```
+| Where | What you do there |
+|---|---|
+| **Browser tab** (`http://localhost:8080/vnc.html`) | Gazebo and RViz appear here. Click **Connect** if the page looks blank. |
+| **VS Code** | Edit code. Its terminal is *inside* the container, so `ros2` commands work there. |
 
-Then clone:
+Your files live in `%USERPROFILE%\RobotLab\ros2_ws\src` and are private to your account.
 
-```powershell
-git clone https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git
-cd UON-CS-robotlab-simulation-container
-```
-
-No specific folder matters here the way it does for WSL2 — there's no cross-filesystem
-performance penalty on native Windows, so the default location (e.g. `Documents\`) is fine.
-Keep the path reasonably short, though, since it is added on top of that 271 characters.
-
-Line endings need no configuration: the repo's `.gitattributes` already forces LF on `*.sh` and
-`Dockerfile`, so the scripts that run inside the Linux container stay valid regardless of your
-local `core.autocrlf` setting.
-
-### 2. Start the noVNC service
-
-```powershell
-cd .\src\.devcontainer\
-powershell -ExecutionPolicy Bypass -File .\start_vnc.ps1 start
-```
-
-This will:
-- Create a `ros` Docker network if it doesn't exist
-- Pull `theasp/novnc:latest` if it isn't cached yet (**first run only — a few hundred MB, so give
-  it a few minutes**; the script prints a message while it downloads)
-- Launch the noVNC container mapped to `http://localhost:8080`
-
-Other commands work the same way: `... start_vnc.ps1 stop`, `status`, `restart`.
-
-Once running, open:
-
-➡ **http://localhost:8080/vnc.html** and click **Connect** to access the container's desktop GUI.
-
-### 3. Open the `src` folder in VS Code
-
-> ⚠️ **This must be the `src` folder — not the repo root, and not `.devcontainer`.**
-> `devcontainer.json` lives at `src/.devcontainer/`, and VS Code only discovers it when `src` is the
-> folder you opened. It also resolves the build/install/log cache mounts relative to that folder.
-> Open the repo root and **Reopen in Container** won't be offered at all; open `.devcontainer` and
-> the container comes up with the wrong folders mounted.
-
-From `src\.devcontainer\` (where step 2 left you):
-
-```powershell
-code ..
-```
-
-Or from anywhere: `code <path-to-repo>\src`
-
-Press `Ctrl+Shift+P` → **Dev Containers: Reopen in Container**. VS Code builds and launches the
-ROS 2 container and attaches it to the `ros` network so it can reach the noVNC container —
-identical to the Linux/WSL2 flow from here on, since the container itself never knows or cares
-what host OS it's running under.
-
-The first build compiles the whole ROS 2 workspace via `postCreateCommand` (`colcon build
---symlink-install`) and takes a long time. Let it finish.
-
-### 4. Test the setup
-
-Inside the VS Code terminal:
+Try it:
 
 ```bash
-source /opt/ros/humble/setup.bash
-ros2 topic list
+ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
 ```
+
+### Rebuilding after you change code
+
+Python nodes and launch files take effect immediately. After changing **C++**, run this in the
+VS Code terminal:
+
+```bash
+robotlab-rebuild                    # rebuild everything, incrementally
+robotlab-rebuild turtlebot3_gazebo  # rebuild just one package, much faster
+robotlab-rebuild --clean            # start over from scratch (slow, ~20 min)
+```
+
+### The other shortcuts
+
+Under **Start menu → Robot Lab**:
+
+- **Robot Lab - Stop** — shuts the containers down. Your work is untouched.
+- **Robot Lab - Check** — diagnoses why it will not start. Try this first.
+- **Robot Lab - Reset** — clears the compiled workspace cache. Use after IT updates the image, or
+  if the container will not start. Asks for confirmation; leaves your source code alone.
 
 ---
 
 ## 🛠 Troubleshooting
 
+Run **Robot Lab - Check** first — it identifies most of these automatically.
+
 | Issue | Solution |
 |---|---|
-| `start_vnc.ps1 cannot be loaded because running scripts is disabled on this system` | Run it via `powershell -ExecutionPolicy Bypass -File .\start_vnc.ps1 start` (see student instructions above) rather than double-clicking or dot-sourcing it directly. No admin rights needed. |
-| `docker: command not found` / `docker` not recognized | Docker Desktop isn't installed or isn't on PATH — this is an IT/imaging step, not something a student can fix. |
-| `error during connect... this error may indicate that the docker daemon is not running` | Docker Desktop is installed but not started. Launch it from the Start menu and wait for the whale icon to settle before retrying. |
-| Permission/pipe error running `docker ps` | The student account isn't in the local `docker-users` group — an IT-side fix (see one-time setup above). |
-| Cannot connect to noVNC | Run `powershell -ExecutionPolicy Bypass -File .\start_vnc.ps1 status` to check if the container is running. |
-| Gazebo spawn service failed | Don't Ctrl+C — let it fail completely, then close and restart. |
-| **Reopen in Container** isn't offered in the command palette | You opened the wrong folder. VS Code must have **`src`** open, because `devcontainer.json` lives at `src/.devcontainer/`. See step 3. |
-| `error gathering device information while adding custom device "/dev/video0": no such file or directory` | Something re-added `--device=/dev/video0` to `devcontainer.json`'s `runArgs`. Docker Desktop's Linux VM has no `/dev/video0`, so the container can never start with that flag. It is removed by default on this branch — leave it out. |
-| Webcam not accessible inside the container | Expected on Windows. Passing a real USB camera through requires [usbipd-win](https://github.com/dorssel/usbipd-win) to attach the device into Docker Desktop's VM first, which needs admin. Lab PCs are set up without camera passthrough. |
-| `The string is missing the terminator: "` when running `start_vnc.ps1` | The file lost its UTF-8 BOM and picked up a non-ASCII character (typically an em dash pasted from a doc). Windows PowerShell 5.1 then decodes it as ANSI, producing a `”` that it treats as a real string delimiter — so the reported line number is meaningless. Re-checkout the file with `git checkout -- start_vnc.ps1`. If you must edit it, keep it pure ASCII and save as **UTF-8 with BOM**. |
-| `Unable to create file [..]: Filename too long` on clone | Run `git config --global core.longpaths true` and clone again (step 1). This is a per-user setting and needs **no admin rights**. |
-| Host port 8080 already in use | Another process (or a leftover container) is bound to it. Run `... start_vnc.ps1 status`, or set `$env:HOST_PORT = "9000"` before calling `start_vnc.ps1 start` to use a different port. |
+| Nothing happens / window flashes and closes | Run **Robot Lab - Check** from the Start menu. It keeps its window open and explains what failed. |
+| `Docker Desktop is not responding` | Start Docker Desktop from the Start menu and wait for the whale icon to stop animating — a cold boot takes a minute or two. |
+| Permission or pipe error talking to Docker | The account is not in the local `docker-users` group. IT-side fix; see the one-time setup above. |
+| `The VS Code Dev Containers extension is not installed` | Run `code --install-extension ms-vscode-remote.remote-containers`. No admin needed. |
+| VS Code opens the folder but does not attach to the container | The launcher falls back to this deliberately. Press `Ctrl+Shift+P`, type **Reopen in Container**, press Enter. |
+| Host port 8080 already in use | Something else is bound to it. Set another port first: `$env:HOST_PORT = "9000"`, then start again. |
+| `manifest unknown` or `denied` when pulling the image | The image tag does not exist, or the GHCR package is still private. Maintainer fix — not something to retry. |
+| Container will not start after IT updated the image | Run **Robot Lab - Reset**. A Docker named volume is only seeded when it is first created, so an existing cache does not pick up a new image on its own. |
+| Gazebo spawn service failed | Don't `Ctrl+C` — let it fail completely, then close and restart. |
+| Webcam not accessible in the container | Expected. Passing a USB camera into Docker Desktop's VM needs [usbipd-win](https://github.com/dorssel/usbipd-win) and admin rights. Lab PCs are set up without camera passthrough. |
 
 ---
 
-## 💡 Notes
+## 💡 How it fits together
 
-- Default user inside container: `team`
-- Workspace is mounted to `/home/ros2_ws/src`
-- Network: `ros` (shared between devcontainer and noVNC container)
-- GUI apps (RViz2, Gazebo) accessible via browser at `http://localhost:8080/vnc.html`
-- `setup.sh` and the `Dockerfile` run entirely *inside* the Linux container, so they're
-  identical regardless of host OS — nothing there needed to change for this flow. Only the
-  host-side network/noVNC bootstrap (`start_vnc.sh` → `start_vnc.ps1`) needed a Windows-native
-  version.
+```
+C:\ProgramData\RobotLab\repo\      IT-managed clone. Students never edit this.
+%USERPROFILE%\RobotLab\ros2_ws\    Per-student copy, made on first launch. Their work lives here.
+
+  novnc container  <--- 'ros' network --->  ROS 2 dev container
+  serves the desktop                        runs Gazebo/RViz, renders onto novnc
+  at localhost:8080                         via DISPLAY=novnc:0.0
+```
+
+- Default user inside the container: `team`
+- Workspace mounts at `/home/ros2_ws/src`
+- `build/`, `install/` and `log/` live in **per-user Docker named volumes**
+  (`robotlab-build-<username>` and friends), not on the host filesystem
+- The image ships an **already-compiled** workspace. Docker seeds each new named volume from it, so
+  a student's first start inherits the finished build instead of running `colcon` for 20 minutes
+
+### Notes for maintainers
+
+- **`setup.sh` is baked into the image.** `postCreateCommand` runs `/usr/local/bin/setup.sh`, the
+  copy `COPY`'d in at build time — *not* the one in your checkout. Editing it in git does nothing
+  until the image is rebuilt and pushed.
+- **The image build context is the repository root**, not `.devcontainer/`, because the Dockerfile
+  copies `src/` in to prebuild it. See [.dockerignore](../../.dockerignore).
+- **`src/` is the single source of truth** for the TurtleBot3 packages. They are ours, with custom
+  URDFs and worlds — not tracked against upstream ROBOTIS. Nothing in this repo may clone over
+  them. An earlier `setup.sh` did exactly that whenever a package folder went missing.
+- **Publishing:** run the **Build dev container image** GitHub Action. It publishes to the testing
+  package `ghcr.io/cobot-maker-space/uon-windows-testing` and refuses to run if the tag it would
+  publish does not match the pin in `devcontainer.json`. New GHCR packages are **private by
+  default** — set the visibility to Public after the first push, or no lab PC can pull it.
+- **`cache/` is no longer tracked.** It was 3,995 files and 221 MB with a 271-character deepest
+  path, which is why `git config core.longpaths true` used to be mandatory before cloning. It is
+  not needed any more.
+- **Keep `*.ps1` and `*.cmd` pure ASCII.** Windows PowerShell 5.1 decodes a BOM-less file using the
+  ANSI codepage; a pasted em dash then becomes a character the parser reads as a string delimiter,
+  producing a bogus error hundreds of lines from the real one.

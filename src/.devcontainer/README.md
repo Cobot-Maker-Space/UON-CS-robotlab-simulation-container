@@ -11,8 +11,9 @@ It includes:
 > ℹ️ **Why WSL2?** Docker Desktop for Windows requires the WSL2 backend to run Linux containers. This doc runs everything inside a real Ubuntu (WSL2) shell, which behaves identically to native Linux — no rewritten commands needed.
 >
 > **Deploying to shared lab PCs where students have no admin rights?** See
-> [README-lab-windows.md](README-lab-windows.md) instead — it uses a native `start_vnc.ps1`
-> PowerShell script so students never need to open a WSL shell.
+> [README-lab-windows.md](README-lab-windows.md) instead. Students there don't follow any of the
+> steps below — IT prepares the machine once and students double-click a single **Robot Lab**
+> shortcut that starts everything and opens VS Code already attached to the container.
 
 📦 Prerequisites
 

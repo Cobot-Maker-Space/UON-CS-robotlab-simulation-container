@@ -1,4 +1,0 @@
-Invoking command in '/home/ros2_ws/build/turtlebot3_description': /usr/bin/cmake --build /home/ros2_ws/build/turtlebot3_description -- -j22 -l22
-Invoked command in '/home/ros2_ws/build/turtlebot3_description' returned '0': /usr/bin/cmake --build /home/ros2_ws/build/turtlebot3_description -- -j22 -l22
-Invoking command in '/home/ros2_ws/build/turtlebot3_description': /usr/bin/cmake --install /home/ros2_ws/build/turtlebot3_description
-Invoked command in '/home/ros2_ws/build/turtlebot3_description' returned '0': /usr/bin/cmake --install /home/ros2_ws/build/turtlebot3_description

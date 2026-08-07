@@ -1,4 +1,0 @@
-Invoking command in '/home/ros2_ws/build/turtlebot3_navigation2': /usr/bin/cmake --build /home/ros2_ws/build/turtlebot3_navigation2 -- -j22 -l22
-Invoked command in '/home/ros2_ws/build/turtlebot3_navigation2' returned '0': /usr/bin/cmake --build /home/ros2_ws/build/turtlebot3_navigation2 -- -j22 -l22
-Invoking command in '/home/ros2_ws/build/turtlebot3_navigation2': /usr/bin/cmake --install /home/ros2_ws/build/turtlebot3_navigation2
-Invoked command in '/home/ros2_ws/build/turtlebot3_navigation2' returned '0': /usr/bin/cmake --install /home/ros2_ws/build/turtlebot3_navigation2

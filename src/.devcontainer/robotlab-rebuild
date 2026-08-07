@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# robotlab-rebuild - rebuild the ROS 2 workspace from inside the dev container.
+#
+# The container starts with a workspace that was already compiled when the image was built, so
+# setup.sh does not build anything on startup. This is the explicit way to rebuild after changing
+# source code.
+#
+# Usage:
+#   robotlab-rebuild                  incremental build of every package
+#   robotlab-rebuild <pkg> [<pkg>...] incremental build of just those packages (much faster)
+#   robotlab-rebuild --clean          wipe build/ and install/ and build everything from scratch
+set -euo pipefail
+
+WORKSPACE_DIR="/home/ros2_ws"
+
+CLEAN=0
+PACKAGES=()
+for arg in "$@"; do
+  case "$arg" in
+    --clean) CLEAN=1 ;;
+    -h|--help)
+      sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $arg" >&2
+      echo "Try 'robotlab-rebuild --help'." >&2
+      exit 2
+      ;;
+    *) PACKAGES+=("$arg") ;;
+  esac
+done
+
+if [ ! -d "${WORKSPACE_DIR}/src" ]; then
+  echo "ERROR: ${WORKSPACE_DIR}/src not found. Are you inside the dev container?" >&2
+  exit 1
+fi
+
+cd "$WORKSPACE_DIR"
+
+set +u
+# shellcheck disable=SC1091
+source /opt/ros/humble/setup.bash
+set -u
+
+if [ "$CLEAN" -eq 1 ]; then
+  echo "Clean rebuild: removing build/ and install/ contents."
+  echo "This discards the prebuilt workspace and will take 10-25 minutes."
+  # Clear the contents, not the directories themselves - they are named-volume mount points.
+  rm -rf "${WORKSPACE_DIR}/build/"* "${WORKSPACE_DIR}/install/"* "${WORKSPACE_DIR}/log/"*
+fi
+
+# Keep this flag identical to the one used in the Dockerfile. colcon refuses to build into an
+# install tree that was created with a different layout, so mixing symlink and non-symlink
+# invocations against the same workspace is an error.
+if [ "${#PACKAGES[@]}" -gt 0 ]; then
+  echo "Building: ${PACKAGES[*]}"
+  colcon build --symlink-install --packages-select "${PACKAGES[@]}"
+else
+  echo "Building all packages."
+  colcon build --symlink-install
+fi
+
+echo
+echo "Done. Open a new terminal, or run:  source ${WORKSPACE_DIR}/install/setup.bash"
