@@ -1,6 +1,7 @@
 {
     "name": "ROS 2 Development Container",
     "image": "ghcr.io/cobot-maker-space/uon-ros2-humble:2026-08-07",
+    //"image": "ghcr.io/cobot-maker-space/uon-windows-testing:lab-2026-08",
     "privileged": true,
     "remoteUser": "team",
     
