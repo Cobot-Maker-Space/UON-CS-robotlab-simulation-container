@@ -321,24 +321,51 @@ function Get-DevContainerId {
     # extension has not always written the path in the same shape (drive letter case, trailing
     # separator, forward vs back slashes). A near-miss there would make a perfectly good attach
     # look like a failure and pop up a second VS Code window. Compare the paths ourselves instead.
-    $rows = docker ps --format '{{.ID}}|{{.Label "devcontainer.local_folder"}}' 2>$null
-    if ($LASTEXITCODE -ne 0 -or -not $rows) { return $null }
+    #
+    # Deliberately not using 'docker ps --format' with a {{.Label "..."}} template either. Windows
+    # PowerShell 5.1 strips the inner double quotes when it builds the command line for a native
+    # executable, so docker actually receives {{.Label devcontainer.local_folder}}, Go's template
+    # parser reads that bare word as a function call, and the whole command fails with
+    #     failed to parse template: function "devcontainer" not defined
+    # 'docker inspect' piped through ConvertFrom-Json needs no quoting inside a template at all, so
+    # the native argument parser cannot corrupt it, on 5.1 or on PowerShell 7.
+    #
+    # This is a best-effort probe and every caller treats $null as "not running", so it must never
+    # throw. With $ErrorActionPreference = 'Stop' set at the top of this script, ANY native command
+    # that writes to stderr raises a TERMINATING NativeCommandError, and '2>$null' does not prevent
+    # that on 5.1. The assignment below shadows the script-level preference for this function only,
+    # and the try/catch is the second line of defence.
+    $ErrorActionPreference = 'Continue'
 
-    $target = $UserSrc.TrimEnd('\', '/').Replace('/', '\')
-    foreach ($row in @($rows)) {
-        $parts = "$row".Split('|')
-        if ($parts.Count -lt 2) { continue }
-        $folder = $parts[1].Trim().TrimEnd('\', '/').Replace('/', '\')
-        if ($folder -and ($folder -ieq $target)) { return $parts[0].Trim() }
+    try {
+        $ids = @(docker ps -q 2>$null)
+        if ($LASTEXITCODE -ne 0 -or $ids.Count -eq 0) { return $null }
+
+        $target = $UserSrc.TrimEnd('\', '/').Replace('/', '\')
+
+        # Out-String matters: ConvertFrom-Json on 5.1 takes pipeline input line by line and chokes
+        # on a multi-line JSON document.
+        $raw = docker inspect $ids 2>$null | Out-String
+        if ($raw -and $raw.Trim()) {
+            foreach ($container in @($raw | ConvertFrom-Json)) {
+                $folder = $container.Config.Labels.'devcontainer.local_folder'
+                if (-not $folder) { continue }
+                $folder = "$folder".Trim().TrimEnd('\', '/').Replace('/', '\')
+                if ($folder -ieq $target) { return $container.Id }
+            }
+        }
+
+        # Fallback for the case where that label is absent or renamed by a future extension version:
+        # any running container built from the image devcontainer.json pins is almost certainly ours.
+        $image = Get-PinnedImage
+        if ($image) {
+            $id = docker ps -q --filter "ancestor=$image" 2>$null
+            if ($LASTEXITCODE -eq 0 -and $id) { return ($id | Select-Object -First 1) }
+        }
+    } catch {
+        return $null
     }
 
-    # Fallback for the case where that label is absent or renamed by a future extension version:
-    # any running container built from the image devcontainer.json pins is almost certainly ours.
-    $image = Get-PinnedImage
-    if ($image) {
-        $id = docker ps -q --filter "ancestor=$image" 2>$null
-        if ($LASTEXITCODE -eq 0 -and $id) { return ($id | Select-Object -First 1) }
-    }
     return $null
 }
 
