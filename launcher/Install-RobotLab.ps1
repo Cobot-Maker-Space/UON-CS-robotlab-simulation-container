@@ -48,7 +48,7 @@ param(
     [string]$StudentGroup,
     [string]$InstallPath = "$env:ProgramData\RobotLab\repo",
     [string]$RepoUrl     = 'https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git',
-    [string]$Branch      = 'lab-testing-windows',
+    [string]$Branch      = 'clickable-lab-machines-testing',
     [string]$NovncImage  = 'theasp/novnc:latest',
     [switch]$InstallMissing,
     [switch]$SkipImagePull
