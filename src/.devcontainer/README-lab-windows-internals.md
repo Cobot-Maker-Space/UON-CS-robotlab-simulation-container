@@ -7,8 +7,7 @@ ordinary user, and that you have **never written a line of PowerShell**. It expl
 the Windows lab deployment: what it does, how it does it, and — the part that matters in a
 review — **why it is built that way and what the alternative would have cost**.
 
-- Want to *use* the system? → [README-lab-windows.md](README-lab-windows.md)
-- Want to set up your own machine? → [README.md](README.md) (WSL2) or [root README](../../README.md)
+- Want to *use* the system? → [root README](../../README.md)
 - Want to *understand or defend* the system? → you are in the right place.
 
 ---
