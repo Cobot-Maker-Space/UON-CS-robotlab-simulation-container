@@ -33,16 +33,18 @@ That script is idempotent — re-run it any time to update a machine. It:
 5. Creates the `ros` Docker network
 6. Puts a **Robot Lab** shortcut on the all-users desktop and in the Start menu
 
-### Two things the installer cannot do for you
+### One thing the installer cannot do for you
 
-- **The VS Code Dev Containers extension installs per user.** Push it to every student account via
-  a login script or GPO:
-  ```powershell
-  code --install-extension ms-vscode-remote.remote-containers
-  ```
-  The launcher checks for it and prints this exact command if it is missing, so a student is never
-  left guessing.
 - **Docker Desktop must be running** before a student launches. Set it to start on login.
+
+The VS Code Dev Containers extension installs per user, but you do not need a login script or GPO
+for it: the launcher checks for it on every run and silently installs it for the current account
+the first time it is missing, before opening VS Code. No admin rights are needed for that install.
+If it ever fails (e.g. no network on first run), the launcher falls back to printing the exact
+command so a student is never left guessing:
+```powershell
+code --install-extension ms-vscode-remote.remote-containers
+```
 
 ### Verify before a class
 
@@ -103,7 +105,7 @@ Run **Robot Lab - Check** first — it identifies most of these automatically.
 | Nothing happens / window flashes and closes | Run **Robot Lab - Check** from the Start menu. It keeps its window open and explains what failed. |
 | `Docker Desktop is not responding` | Start Docker Desktop from the Start menu and wait for the whale icon to stop animating — a cold boot takes a minute or two. |
 | Permission or pipe error talking to Docker | The account is not in the local `docker-users` group. IT-side fix; see the one-time setup above. |
-| `The VS Code Dev Containers extension is not installed` | Run `code --install-extension ms-vscode-remote.remote-containers`. No admin needed. |
+| `Could not install the VS Code Dev Containers extension` | The launcher tries to install it automatically on first run; this means that failed (usually no network). Run `code --install-extension ms-vscode-remote.remote-containers` yourself. No admin needed. |
 | VS Code opens the folder but does not attach to the container | The launcher falls back to this deliberately. Press `Ctrl+Shift+P`, type **Reopen in Container**, press Enter. |
 | Host port 8080 already in use | Something else is bound to it. Set another port first: `$env:HOST_PORT = "9000"`, then start again. |
 | `manifest unknown` or `denied` when pulling the image | The image tag does not exist, or the GHCR package is still private. Maintainer fix — not something to retry. |

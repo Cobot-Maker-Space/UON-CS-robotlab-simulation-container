@@ -154,10 +154,8 @@ if ($extensions -contains 'ms-vscode-remote.remote-containers') {
     Write-Info "Installing it for $($env:USERNAME)..."
     & code --install-extension ms-vscode-remote.remote-containers 2>$null | Out-Null
 }
-Write-Warn "VS Code extensions are PER USER. Students each need this extension."
-Write-Host "  Deploy it to every account with a login script or GPO running:" -ForegroundColor Gray
-Write-Host "    code --install-extension ms-vscode-remote.remote-containers" -ForegroundColor Gray
-Write-Host "  The launcher checks for it and tells the student the exact command if it is absent." -ForegroundColor Gray
+Write-Info "VS Code extensions are PER USER. The launcher installs this one automatically for each"
+Write-Host "  student on their first run, so no login script or GPO is needed for it." -ForegroundColor Gray
 
 # --- 2. docker-users group ----------------------------------------------------------------------
 Write-Step "2/6  Docker access for non-admin accounts"

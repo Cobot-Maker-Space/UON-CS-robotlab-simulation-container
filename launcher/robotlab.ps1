@@ -138,13 +138,18 @@ function Test-DevContainersExtension {
         return $true
     }
     if ($extensions -notcontains 'ms-vscode-remote.remote-containers') {
-        Write-Err "The VS Code 'Dev Containers' extension is not installed."
-        Write-Remedy @(
-            "Install it with:",
-            "  code --install-extension ms-vscode-remote.remote-containers",
-            "This does not need admin rights."
-        )
-        return $false
+        Write-Warn "The VS Code 'Dev Containers' extension is not installed. Installing it now (first run only)..."
+        & code --install-extension ms-vscode-remote.remote-containers 2>$null | Out-Null
+        $extensions = & code --list-extensions 2>$null
+        if ($extensions -notcontains 'ms-vscode-remote.remote-containers') {
+            Write-Err "Could not install the VS Code 'Dev Containers' extension."
+            Write-Remedy @(
+                "Install it manually with:",
+                "  code --install-extension ms-vscode-remote.remote-containers",
+                "This does not need admin rights."
+            )
+            return $false
+        }
     }
     Write-Ok "Dev Containers extension installed."
     return $true
