@@ -188,7 +188,10 @@ function Start-NoVnc {
         '--env', "DISPLAY_HEIGHT=$DisplayHeight",
         '--env', "RUN_XTERM=$RunXterm",
         '--name', $NovncName,
-        '-p', "${HostPort}:8080",
+        # 127.0.0.1 on purpose. Without it Docker publishes on 0.0.0.0, and this desktop has no
+        # password and forwards keyboard and mouse - anyone who could reach the port would have
+        # an interactive session. Students reach it through localhost either way.
+        '-p', "127.0.0.1:${HostPort}:8080",
         $NovncImage
     )
     docker @runArgs > $null

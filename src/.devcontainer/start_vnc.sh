@@ -80,12 +80,14 @@ start() {
     warn "Host port ${HOST_PORT} looks busy. docker run may fail to bind that port."
   fi
 
+  # 127.0.0.1 on purpose: this desktop has no password and forwards keyboard and mouse, so it
+  # must not be published on 0.0.0.0. Reached through localhost either way.
   info "Running new noVNC container '${NOVNC_NAME}' (image: ${NOVNC_IMAGE})..."
   docker run -d --rm --network "$NETWORK_NAME" \
     --env "DISPLAY_WIDTH=${DISPLAY_WIDTH}" \
     --env "DISPLAY_HEIGHT=${DISPLAY_HEIGHT}" \
     --env "RUN_XTERM=${RUN_XTERM}" \
-    --name "$NOVNC_NAME" -p "${HOST_PORT}:8080" "$NOVNC_IMAGE" >/dev/null
+    --name "$NOVNC_NAME" -p "127.0.0.1:${HOST_PORT}:8080" "$NOVNC_IMAGE" >/dev/null
 
   sleep 0.8
   if container_running; then

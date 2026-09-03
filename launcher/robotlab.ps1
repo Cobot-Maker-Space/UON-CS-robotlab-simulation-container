@@ -84,6 +84,29 @@ function Stop-WithError {
     exit $Code
 }
 
+function Invoke-DockerQuiet {
+    # Every "is X present / did X work?" docker probe goes through here, and it never throws.
+    #
+    # Windows PowerShell 5.1 turns a native command's REDIRECTED stderr into an error record, and
+    # with $ErrorActionPreference = 'Stop' (set at the top of this script) that record is a
+    # TERMINATING error. '2>$null' does not prevent that - it is part of what triggers it.
+    #
+    # This matters more than it looks. Every probe below fires exactly when something is missing or
+    # not running, which is precisely when docker writes to stderr. Without this helper the
+    # carefully written diagnostics underneath would be skipped in favour of a raw PowerShell
+    # exception - so the most common failure of all, Docker Desktop not started, produced the
+    # worst error message in the whole launcher.
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$DockerArgs)
+
+    $ErrorActionPreference = 'Continue'   # function-scoped; shadows the script-level 'Stop'
+    try {
+        docker @DockerArgs > $null 2>&1
+        return $LASTEXITCODE
+    } catch {
+        return 1
+    }
+}
+
 # --- Preflight checks -------------------------------------------------------------------------
 # Each returns $true/$false and prints its own diagnosis, so 'doctor' can run them all and 'start'
 # can stop at the first failure.
@@ -102,8 +125,7 @@ function Test-DockerCli {
 }
 
 function Test-DockerEngine {
-    docker info > $null 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    if ((Invoke-DockerQuiet info) -ne 0) {
         Write-Err "Docker Desktop is not responding."
         Write-Remedy @(
             "1. Start Docker Desktop from the Start menu and wait for the whale icon to stop",
@@ -132,15 +154,24 @@ function Test-VsCode {
 
 function Test-DevContainersExtension {
     # 'code --list-extensions' is slow (a few seconds), so this is checked once per run.
-    $extensions = & code --list-extensions 2>$null
-    if ($LASTEXITCODE -ne 0) {
+    #
+    # Same 5.1 hazard as Invoke-DockerQuiet: 'code' can write to stderr, and a redirected native
+    # stderr is a terminating error under 'Stop'. The exit code is captured inside the try so the
+    # meaning of the check below is unchanged - an account with no extensions at all must still
+    # reach the install branch rather than being treated as "could not list".
+    $ErrorActionPreference = 'Continue'
+
+    $listExit = 0
+    try { $extensions = & code --list-extensions 2>$null; $listExit = $LASTEXITCODE }
+    catch { $listExit = 1 }
+    if ($listExit -ne 0) {
         Write-Warn "Could not list VS Code extensions. Continuing anyway."
         return $true
     }
     if ($extensions -notcontains 'ms-vscode-remote.remote-containers') {
         Write-Warn "The VS Code 'Dev Containers' extension is not installed. Installing it now (first run only)..."
-        & code --install-extension ms-vscode-remote.remote-containers 2>$null | Out-Null
-        $extensions = & code --list-extensions 2>$null
+        try { & code --install-extension ms-vscode-remote.remote-containers 2>$null | Out-Null } catch { }
+        try { $extensions = & code --list-extensions 2>$null } catch { $extensions = @() }
         if ($extensions -notcontains 'ms-vscode-remote.remote-containers') {
             Write-Err "Could not install the VS Code 'Dev Containers' extension."
             Write-Remedy @(
@@ -234,15 +265,50 @@ function Invoke-Preflight {
 
 # --- Per-user workspace -----------------------------------------------------------------------
 
-function Initialize-UserWorkspace {
-    if (Test-Path $UserSrc) {
-        Write-Ok "Your workspace is at $UserSrc"
+function Update-WorkspaceConfig {
+    # .devcontainer is infrastructure, not student work, so it is refreshed on EVERY launch.
+    #
+    # Without this a student's copy of devcontainer.json is frozen at whatever it said on their
+    # very first launch. Get-PinnedImage reads THEIR copy, so once IT publishes a new image and
+    # moves the pin, that student keeps using the old image indefinitely - and 'Reset' does not
+    # help, because it only deletes the volumes, which then re-seed from the same old image. The
+    # documented "after an image update, run Reset" workflow cannot work without this.
+    #
+    # Their own code under src/ is deliberately left alone: they edit that, we do not.
+    $srcConfig  = Join-Path $RepoSrc '.devcontainer'
+    $destConfig = Join-Path $UserSrc '.devcontainer'
+    if (-not (Test-Path $srcConfig)) { return }
+
+    # /PURGE so a file deleted upstream also disappears here. Exit codes below 8 are success.
+    & robocopy $srcConfig $destConfig /E /PURGE /NFL /NDL /NJH /NJS /NP | Out-Null
+    $rc = $LASTEXITCODE
+    if ($rc -ge 8) {
+        Write-Warn "Could not refresh your .devcontainer configuration (robocopy exit code $rc)."
+        Write-Warn "  Carrying on with the copy you have - it may be out of date."
         return
     }
+    if ($rc -ge 1) { Write-Info "Updated your .devcontainer configuration from the managed copy." }
+}
 
-    Write-Info "First run for '$($env:USERNAME)'. Setting up your own copy of the workspace..."
-    Write-Info "  from: $RepoSrc"
-    Write-Info "  to:   $UserSrc"
+function Initialize-UserWorkspace {
+    $configPath = Join-Path $UserSrc '.devcontainer\devcontainer.json'
+
+    if (Test-Path $UserSrc) {
+        # An existing folder is not necessarily a COMPLETE one. A first run interrupted partway
+        # through the copy leaves $UserSrc there without .devcontainer, and the old unconditional
+        # early return then reported success on every launch afterwards while VS Code failed with
+        # something unrelated-looking. Re-copy instead.
+        if (Test-Path $configPath) {
+            Write-Ok "Your workspace is at $UserSrc"
+            Update-WorkspaceConfig
+            return
+        }
+        Write-Warn "Your workspace at $UserSrc is incomplete (no .devcontainer). Repairing it..."
+    } else {
+        Write-Info "First run for '$($env:USERNAME)'. Setting up your own copy of the workspace..."
+        Write-Info "  from: $RepoSrc"
+        Write-Info "  to:   $UserSrc"
+    }
 
     New-Item -ItemType Directory -Force -Path $UserWorkspace | Out-Null
 
@@ -257,7 +323,7 @@ function Initialize-UserWorkspace {
         )
     }
 
-    if (-not (Test-Path (Join-Path $UserSrc '.devcontainer\devcontainer.json'))) {
+    if (-not (Test-Path $configPath)) {
         Stop-WithError -Message "The workspace copy is missing .devcontainer\devcontainer.json." -Remedy @(
             "The source at $RepoSrc looks incomplete. IT should re-clone the repository."
         )
@@ -285,8 +351,7 @@ function Confirm-RosImage {
         return
     }
 
-    docker image inspect $image > $null 2>&1
-    if ($LASTEXITCODE -eq 0) {
+    if ((Invoke-DockerQuiet image inspect $image) -eq 0) {
         Write-Ok "ROS 2 image is already downloaded."
         return
     }
@@ -491,7 +556,7 @@ function Invoke-Stop {
     $id = Get-DevContainerId
     if ($id) {
         Write-Info "Stopping the dev container..."
-        docker stop $id > $null 2>&1
+        Invoke-DockerQuiet stop $id | Out-Null
         Write-Ok "Dev container stopped."
     } else {
         Write-Info "No dev container running."
@@ -547,13 +612,12 @@ function Invoke-Reset {
     $id = Get-DevContainerId
     if ($id) {
         Write-Info "Stopping and removing the dev container..."
-        docker rm -f $id > $null 2>&1
+        Invoke-DockerQuiet rm -f $id | Out-Null
     }
 
     foreach ($kind in @('build', 'install', 'log')) {
         $name = "rossim-$kind-$($env:USERNAME)"
-        docker volume rm $name > $null 2>&1
-        if ($LASTEXITCODE -eq 0) { Write-Ok "Removed volume $name" }
+        if ((Invoke-DockerQuiet volume rm $name) -eq 0) { Write-Ok "Removed volume $name" }
         else { Write-Info "Volume $name was not present." }
     }
 

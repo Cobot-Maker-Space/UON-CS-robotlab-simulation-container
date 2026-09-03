@@ -56,6 +56,24 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+function Invoke-DockerQuiet {
+    # See the long note on the identical helper in robotlab.ps1. Short version: on Windows
+    # PowerShell 5.1 a native command's REDIRECTED stderr becomes a TERMINATING error under
+    # $ErrorActionPreference = 'Stop', and '2>$null' does not prevent it. Both probes below fire
+    # exactly when the thing being probed is absent - Docker not running, network not yet created -
+    # which is the moment docker writes to stderr, so without this the handled branches underneath
+    # would never be reached on a fresh machine.
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$DockerArgs)
+
+    $ErrorActionPreference = 'Continue'
+    try {
+        docker @DockerArgs > $null 2>&1
+        return $LASTEXITCODE
+    } catch {
+        return 1
+    }
+}
+
 function Write-Step { param([string]$m) Write-Host "`n=== $m ===" -ForegroundColor White }
 function Write-Info { param([string]$m) Write-Host "[INFO] $m" -ForegroundColor Cyan }
 function Write-Ok   { param([string]$m) Write-Host "[ OK ] $m" -ForegroundColor Green }
@@ -147,12 +165,14 @@ if (-not $prereqOk) {
 # The Dev Containers extension installs per-user, so this only covers the account running the
 # script. On a shared machine it has to be handled per student.
 Write-Info "Checking the VS Code Dev Containers extension for the CURRENT account..."
-$extensions = & code --list-extensions 2>$null
-if ($extensions -contains 'ms-vscode-remote.remote-containers') {
+$listExit = 0
+try { $extensions = & code --list-extensions 2>$null; $listExit = $LASTEXITCODE }
+catch { $listExit = 1 }
+if ($listExit -eq 0 -and $extensions -contains 'ms-vscode-remote.remote-containers') {
     Write-Ok "Dev Containers extension present for $($env:USERNAME)."
 } else {
     Write-Info "Installing it for $($env:USERNAME)..."
-    & code --install-extension ms-vscode-remote.remote-containers 2>$null | Out-Null
+    try { & code --install-extension ms-vscode-remote.remote-containers 2>$null | Out-Null } catch { }
 }
 Write-Info "VS Code extensions are PER USER. The launcher installs this one automatically for each"
 Write-Host "  student on their first run, so no login script or GPO is needed for it." -ForegroundColor Gray
@@ -215,8 +235,7 @@ Write-Step "4/6  Container images"
 if ($SkipImagePull) {
     Write-Warn "Skipping image download because -SkipImagePull was given."
 } else {
-    docker info > $null 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    if ((Invoke-DockerQuiet info) -ne 0) {
         Write-Err "Docker Desktop is not running, so the images cannot be pre-pulled."
         Write-Host "  Start Docker Desktop and re-run this script. Without this step, the first" -ForegroundColor Gray
         Write-Host "  student to log in downloads about 2.6 GB while the class waits." -ForegroundColor Gray
@@ -249,10 +268,8 @@ if ($SkipImagePull) {
 # --- 5. Docker network --------------------------------------------------------------------------
 Write-Step "5/6  Docker network"
 
-docker info > $null 2>&1
-if ($LASTEXITCODE -eq 0) {
-    docker network inspect ros > $null 2>&1
-    if ($LASTEXITCODE -eq 0) {
+if ((Invoke-DockerQuiet info) -eq 0) {
+    if ((Invoke-DockerQuiet network inspect ros) -eq 0) {
         Write-Ok "Docker network 'ros' already exists."
     } else {
         docker network create ros | Out-Null
