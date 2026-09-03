@@ -1156,6 +1156,219 @@ Being able to name your own system's limits is what separates "I wrote this" fro
 
 ---
 
+## Part 7 — The `IT-Deployment` branch: what changed and why
+
+Everything above describes **this** branch (`clickable-lab-machines-testing`), which is the
+development line. The branch handed to IT is **`IT-Deployment`**, and it differs deliberately. If
+you are asked "which one is real?", the answer is: this branch is where the work happens,
+`IT-Deployment` is what gets installed on machines.
+
+### 7.1 The mapping, one line per change
+
+| Thing | `clickable-lab-machines-testing` | `IT-Deployment` |
+|---|---|---|
+| Product name | Robot Lab | **ROS Simulator** |
+| Desktop icon | `Robot Lab.lnk` | `ROS Simulator.lnk` |
+| Start menu folder | `...\Programs\Robot Lab` | `...\Programs\ROS Simulator` |
+| Start menu entries | Robot Lab / - Stop / - Check / - Reset | ROS Simulator / - Stop / - Check / - Reset |
+| Double-click targets | `Start Robot Lab.cmd` etc. | `Start ROS Simulator.cmd` etc. |
+| Managed clone | `C:\ProgramData\RobotLab\repo` | `C:\ProgramData\ROSSimulator\repo` |
+| Student workspace | `%USERPROFILE%\RobotLab\ros2_ws` | `%USERPROFILE%\ROSSimulator\ros2_ws` |
+| Workspace override var | `ROBOTLAB_HOME` | `ROSSIM_HOME` |
+| Cache volumes | `robotlab-{build,install,log}-<user>` | `rossim-{build,install,log}-<user>` |
+| In-container rebuild cmd | `robotlab-rebuild` | `rossim-rebuild` |
+| Image | `ghcr.io/cobot-maker-space/uon-windows-testing:lab-2026-08` | `ghcr.io/cobot-maker-space/windows-robot-simulation:humble-sim-2026-09` |
+| CI push trigger | tags matching `lab-*` | tags matching `humble-sim-*` |
+| Installer default branch | `clickable-lab-machines-testing` | `IT-Deployment` |
+| Internal docs | this file, IT deployment notes | **removed** |
+
+**Deliberately unchanged on both branches**, because changing them would break the shared pieces
+for no benefit: the Docker network name `ros`, the noVNC container name `novnc`, port `8080`,
+the script filenames `robotlab.ps1` and `Install-RobotLab.ps1`, the `New-RobotLabShortcut`
+function, and the git repository URL.
+
+### 7.2 Why the name changed
+
+"Robot Lab" implied timetabled lab sessions. The system's actual purpose is **independent student
+work outside lab time**, so the old name told students the wrong thing about when to use it.
+
+### 7.3 Why the paths and volumes moved too, not just the icon
+
+A half-rename would have left `ROS Simulator` shortcuts writing into `C:\ProgramData\RobotLab`,
+which is the sort of inconsistency that wastes an afternoon two years from now. The reason it was
+safe to do *now* is that exactly one machine had ever been installed, and it is being removed
+(§7.5). After a real rollout this rename would strand every student's workspace: they would launch,
+find an empty `ROSSimulator` folder, and reasonably conclude their coursework had been deleted.
+
+One coupling worth knowing: the volume prefix had to change in **two** places — `devcontainer.json`
+creates the volumes, `robotlab.ps1` lists and deletes them in Reset. Changing only one side would
+have left Reset reporting success while clearing nothing.
+
+### 7.4 Bug fixes that went in at the same time
+
+`IT-Deployment` also carries fixes, as a separate commit so the rename stays reviewable:
+
+- **The redirected-stderr crash class.** Four more instances of the bug that broke
+  `Get-DevContainerId` — in `Test-DockerEngine`, `Confirm-RosImage`, `Invoke-Reset`, and the
+  installer's network stage. All were on "the thing is missing" paths, which is exactly why a
+  successful pilot run never hit them. Both scripts now route these probes through a new
+  `Invoke-DockerQuiet` helper that cannot throw.
+- **Stale `.devcontainer`.** A student's copy was frozen at first launch, so a new image pin never
+  reached them and `Reset` could not help. `Update-WorkspaceConfig` now refreshes it every launch.
+- **Interrupted first copy** is now detected and repaired instead of reported as success forever.
+- **noVNC bound to `127.0.0.1`** instead of `0.0.0.0`.
+
+Still open on both branches: `Test-DiskSpace` returns `$false` on a mere warning and so hard-blocks
+`start`, and the machine-wide `novnc` container is shared between concurrently logged-in users.
+
+---
+
+## Part 8 — Removing the pilot install from the one PC
+
+Do this before testing `IT-Deployment` on the same machine. The two installs use different paths
+and different volume names, so they would otherwise sit side by side and confuse everyone.
+
+> **Order matters.** Docker images and volumes are stored **per Windows user**, so the Docker steps
+> must be run **as each account that ever launched it** — running them once as an administrator
+> only cleans the administrator's store. The file/shortcut steps are the opposite: they need admin.
+
+### 8.1 As each user account that ran Robot Lab
+
+```powershell
+# 1. Stop it cleanly first (or use Start menu > Robot Lab - Stop)
+docker rm -f novnc
+
+# 2. Remove the dev container, if one exists
+docker ps -a -q --filter "ancestor=ghcr.io/cobot-maker-space/uon-windows-testing:lab-2026-08" |
+    ForEach-Object { docker rm -f $_ }
+
+# 3. Remove that user's cache volumes  (Start menu > Robot Lab - Reset does the same thing)
+docker volume ls --format "{{.Name}}" --filter "name=robotlab-" |
+    ForEach-Object { docker volume rm $_ }
+
+# 4. Remove the images - this is the ~10 GB
+docker rmi ghcr.io/cobot-maker-space/uon-windows-testing:lab-2026-08
+docker rmi theasp/novnc:latest
+
+# 5. Remove the workspace.  BACK UP ANY WORK FIRST - this deletes their source code.
+Remove-Item "$env:USERPROFILE\RobotLab" -Recurse -Force
+```
+
+**Deleting images does not give the disk space back to Windows.** Docker Desktop's WSL2 virtual
+disk grows but does not shrink on its own. To actually reclaim it:
+
+```powershell
+docker system prune -a          # inside Docker
+wsl --shutdown                  # then, to compact the VHDX:
+wsl --manage docker-desktop --set-sparse true
+```
+
+Check free space before and after — that difference is also the honest per-user cost figure for
+the disk planning question.
+
+### 8.2 As an administrator, once per machine
+
+```powershell
+Remove-Item "C:\Users\Public\Desktop\Robot Lab.lnk" -Force
+Remove-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Robot Lab" -Recurse -Force
+Remove-Item "C:\ProgramData\RobotLab" -Recurse -Force
+Remove-Item "C:\Temp\robotlab" -Recurse -Force      # the staging clone, if still there
+```
+
+**Leave these alone** — the new branch reuses them, so removing them just means the installer has
+to recreate them:
+
+- the `ros` Docker network (`docker network rm ros` only if you are decommissioning entirely)
+- `docker-users` group membership
+- Docker Desktop, VS Code, Git
+- the VS Code Dev Containers extension
+
+### 8.3 Confirm it is gone
+
+```powershell
+Test-Path "C:\ProgramData\RobotLab"            # False
+Test-Path "$env:USERPROFILE\RobotLab"           # False
+docker volume ls | Select-String robotlab        # no output
+docker images  | Select-String uon-windows       # no output
+```
+
+---
+
+## Part 9 — Test run of the `IT-Deployment` branch
+
+### 9.1 Publish the image first — nothing works before this
+
+`devcontainer.json` on that branch pins
+`ghcr.io/cobot-maker-space/windows-robot-simulation:humble-sim-2026-09`, **which does not exist
+yet**. Install before publishing and every student gets `manifest unknown`.
+
+1. On GitHub, run the **Build dev container image** workflow from the `IT-Deployment` branch, with
+   tag `humble-sim-2026-09`. The workflow refuses to publish if that tag does not match the pin in
+   `devcontainer.json` — that guard is the point, so a failure here means the two have drifted.
+2. When it finishes, the new GHCR package is **private by default**. Set its visibility to Public
+   in the package settings, or every machine needs `docker login` before it can pull.
+3. Verify anonymous pull actually works before touching a lab PC:
+
+```bash
+R=cobot-maker-space/windows-robot-simulation
+T=$(curl -s "https://ghcr.io/token?scope=repository:$R:pull&service=ghcr.io" | jq -r .token)
+curl -s -H "Authorization: Bearer $T" "https://ghcr.io/v2/$R/tags/list"
+```
+
+Expect the tag list back. `denied` means it is still private.
+
+### 9.2 Install
+
+Elevated PowerShell, on a machine cleaned per Part 8:
+
+```powershell
+git clone --branch IT-Deployment https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git C:\Temp\rossim
+powershell -ExecutionPolicy Bypass -File C:\Temp\rossim\launcher\Install-RobotLab.ps1 -StudentGroup "REPLACE-WITH-REAL-GROUP"
+```
+
+Use the real AD group. The placeholder fails with `Principal ... was not found`, the install
+continues anyway, and non-admin students then cannot use Docker at all.
+
+### 9.3 What to check, in order
+
+| # | Check | Expected |
+|---|---|---|
+| 1 | Installer output | Six stages, `ROS Simulator - machine setup` in the banner, no `[FAIL]` |
+| 2 | `C:\ProgramData\ROSSimulator\repo` exists | and `C:\ProgramData\RobotLab` does **not** |
+| 3 | Desktop | one `ROS Simulator` icon, no `Robot Lab` icon |
+| 4 | Start menu | a `ROS Simulator` folder with four entries |
+| 5 | `Get-LocalGroupMember -Group docker-users` | your student group is listed |
+| 6 | **Log out. Log in as a real student account.** | — the rest is meaningless as admin |
+| 7 | `ROS Simulator - Check` | every check passes |
+| 8 | `ROS Simulator` | browser desktop **and** VS Code attached |
+| 9 | `%USERPROFILE%\ROSSimulator\ros2_ws\src` | exists and holds the packages |
+| 10 | `docker volume ls` | `rossim-build-<user>` and friends |
+| 11 | In the VS Code terminal: `rossim-rebuild --help` | prints usage |
+| 12 | `ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py` | Gazebo appears in the browser tab |
+
+### 9.4 Then test the failure paths — these are the actual fixes
+
+None of the above exercises the bugs that were fixed. These do:
+
+| Test | Before | Expected now |
+|---|---|---|
+| **Quit Docker Desktop**, run `ROS Simulator - Check` | raw PowerShell exception | clean `[FAIL] Docker Desktop is not responding` plus the numbered remedy |
+| `ROS Simulator - Reset` on an account that has **never launched** (no volumes) | crashed partway through the loop | `Volume ... was not present.` three times, then finishes |
+| `docker rmi` the image, then launch | crashed instead of pulling | `Downloading the ROS 2 image...` and it pulls |
+| From **another machine**, open `http://<this-pc>:8080/vnc.html` | reachable, no password | connection refused |
+| Delete `%USERPROFILE%\ROSSimulator\ros2_ws\src\.devcontainer`, relaunch | reported success forever | detects it and repairs the copy |
+
+### 9.5 Health warning
+
+Everything on `IT-Deployment` was written on Linux. No PowerShell, Docker Desktop or VS Code was
+available, so **none of it has been executed on Windows**. What was verified mechanically:
+brace and paren balance, pure ASCII, CRLF preserved on host-side scripts and LF on container-side
+ones, shell syntax, JSON and YAML parsing, that every shortcut entry points at a file that exists,
+that the volume prefix matches on both sides, and that the CI tag guard passes against the new pin.
+
+That is not the same as it working. Treat 9.3 and 9.4 as the real test.
+
+
 ## Glossary
 
 | Term | Meaning |
