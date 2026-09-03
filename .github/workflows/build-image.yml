@@ -1,0 +1,146 @@
+name: Build dev container image
+
+# Publishes the ROS 2 dev container image used by src/.devcontainer/devcontainer.json.
+#
+# Before this workflow existed the image was built by hand on someone's laptop and pushed, which
+# is how the production package ended up with a single tag ('2026-08-07') while devcontainer.json
+# pinned ':latest' - a tag that never existed, so every student got 'manifest unknown'.
+#
+# This publishes to a SEPARATE testing package, ghcr.io/<owner>/windows-robot-simulation. The
+# production uon-ros2-humble package is not touched by this workflow. Promotion to production is
+# a deliberate, separate step once the image has been validated on real lab hardware.
+#
+# FIRST RUN: GHCR creates new packages PRIVATE by default. After the first successful push, go to
+# the package settings on GitHub and set its visibility to Public - otherwise every lab PC needs
+# 'docker login' before it can pull.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to publish (e.g. humble-sim-2026-09). Must match the pin in devcontainer.json."
+        required: true
+        default: humble-sim-2026-09
+      push_latest:
+        description: "Also move the ':latest' tag on the testing package."
+        type: boolean
+        required: false
+        default: true
+  push:
+    tags:
+      - "humble-sim-*"
+
+env:
+  REGISTRY: ghcr.io
+  # The owner is 'Cobot-Maker-Space' but GHCR rejects any uppercase in a repository name, so the
+  # full image name is lowercased in the 'meta' step rather than built here.
+  IMAGE_BASENAME: windows-robot-simulation
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # The image bakes in a compiled workspace on top of a ~2.3 GB base, so the default runner
+      # disk gets tight. This reclaims ~20 GB of preinstalled toolchains we do not use.
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+          df -h /
+
+      - name: Resolve image name and tag
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE="${REGISTRY}/${OWNER}/${IMAGE_BASENAME}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+          echo "image_name=${OWNER}/${IMAGE_BASENAME}" >> "$GITHUB_OUTPUT"
+          echo "Publishing ${IMAGE}:${TAG}"
+
+      # Guard against the exact failure this whole workflow exists to prevent: an image tag that
+      # devcontainer.json does not point at. A student would get 'manifest unknown'.
+      - name: Verify devcontainer.json pins the tag being built
+        run: |
+          PINNED=$(grep -oP '^\s*"image"\s*:\s*"\K[^"]+' src/.devcontainer/devcontainer.json)
+          EXPECTED="${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}"
+          echo "devcontainer.json pins: ${PINNED}"
+          echo "this build publishes:   ${EXPECTED}"
+          if [ "${PINNED}" != "${EXPECTED}" ]; then
+            echo "::error::devcontainer.json pins '${PINNED}' but this run publishes '${EXPECTED}'."
+            echo "::error::Update the 'image' field in src/.devcontainer/devcontainer.json to match, or build the tag it already pins."
+            exit 1
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          # Repository root, not src/.devcontainer - the Dockerfile COPYs src/ to prebuild the
+          # workspace. See .dockerignore.
+          context: .
+          file: src/.devcontainer/Dockerfile
+          # Lab PCs are amd64. Do not add arm64 here without checking: the ROS apt packages and
+          # the workspace build would both need to work, and build time roughly doubles.
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+            ${{ (github.event_name == 'push' || inputs.push_latest) && format('{0}:latest', steps.meta.outputs.image) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Proves the two things that actually break in front of a class: the prebuilt workspace is
+      # present, and it contains OUR packages rather than stock upstream ones.
+      - name: Smoke test the published image
+        run: |
+          IMAGE="${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}"
+          docker pull "$IMAGE"
+
+          echo "--- prebuilt workspace present? ---"
+          docker run --rm "$IMAGE" test -f /home/ros2_ws/install/setup.bash \
+            || { echo "::error::No prebuilt workspace in the image - students would face a full colcon build."; exit 1; }
+
+          echo "--- turtlebot3 packages resolve? ---"
+          docker run --rm "$IMAGE" bash -lc \
+            'source /home/ros2_ws/install/setup.bash && ros2 pkg list | grep -c turtlebot3'
+
+          echo "--- gazebo baked in, not apt-installed at runtime? ---"
+          docker run --rm "$IMAGE" bash -lc \
+            'source /opt/ros/humble/setup.bash && ros2 pkg prefix gazebo_ros'
+
+          echo "--- helper on PATH? ---"
+          docker run --rm "$IMAGE" bash -lc 'command -v rossim-rebuild'
+
+      - name: Remind about package visibility
+        run: |
+          echo "### Published \`${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "If this was the first push, the package is **private**. Lab PCs cannot pull a private package without \`docker login\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "Set it to Public under the package settings, then verify anonymously:" >> "$GITHUB_STEP_SUMMARY"
+          echo '```bash' >> "$GITHUB_STEP_SUMMARY"
+          echo "R=${{ steps.meta.outputs.image_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo 'T=$(curl -s "https://ghcr.io/token?scope=repository:$R:pull&service=ghcr.io" | jq -r .token)' >> "$GITHUB_STEP_SUMMARY"
+          echo 'curl -H "Authorization: Bearer $T" "https://ghcr.io/v2/$R/tags/list"' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
