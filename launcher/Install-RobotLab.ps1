@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    One-time Robot Lab setup for a Windows lab machine. Run as administrator, at imaging time.
+    One-time ROS Simulator setup for a Windows lab machine. Run as administrator, at imaging time.
 
 .DESCRIPTION
     Prepares a shared lab PC so that a standard, non-admin student account can run the whole
@@ -13,7 +13,7 @@
       4. Pre-pulls both container images - roughly 2.6 GB, which is the step that must NOT happen
          for the first time in front of a class
       5. Creates the 'ros' Docker network
-      6. Puts "Robot Lab" shortcuts on the all-users desktop and Start menu
+      6. Puts "ROS Simulator" shortcuts on the all-users desktop and Start menu
 
     It is safe to re-run: everything it does is idempotent, and re-running is the intended way to
     update a machine after new work is pushed.
@@ -46,9 +46,9 @@
 [CmdletBinding()]
 param(
     [string]$StudentGroup,
-    [string]$InstallPath = "$env:ProgramData\RobotLab\repo",
+    [string]$InstallPath = "$env:ProgramData\ROSSimulator\repo",
     [string]$RepoUrl     = 'https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git',
-    [string]$Branch      = 'clickable-lab-machines-testing',
+    [string]$Branch      = 'IT-Deployment',
     [string]$NovncImage  = 'theasp/novnc:latest',
     [switch]$InstallMissing,
     [switch]$SkipImagePull
@@ -72,7 +72,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
 }
 
 Write-Host ""
-Write-Host "  Robot Lab - machine setup" -ForegroundColor White
+Write-Host "  ROS Simulator - machine setup" -ForegroundColor White
 Write-Host "  Target: $InstallPath (branch $Branch)" -ForegroundColor Gray
 
 # --- 1. Prerequisites ---------------------------------------------------------------------------
@@ -202,7 +202,7 @@ if (Test-Path (Join-Path $InstallPath '.git')) {
 }
 
 $launcherDir = Join-Path $InstallPath 'launcher'
-$startCmd    = Join-Path $launcherDir 'Start Robot Lab.cmd'
+$startCmd    = Join-Path $launcherDir 'Start ROS Simulator.cmd'
 if (-not (Test-Path $startCmd)) {
     Write-Err "Expected the launcher at $startCmd but it is not there."
     Write-Host "  Is '$Branch' the right branch?" -ForegroundColor Gray
@@ -282,17 +282,17 @@ function New-RobotLabShortcut {
 }
 
 $publicDesktop = Join-Path $env:PUBLIC 'Desktop'
-$startMenuDir  = Join-Path $env:ProgramData 'Microsoft\Windows\Start Menu\Programs\Robot Lab'
+$startMenuDir  = Join-Path $env:ProgramData 'Microsoft\Windows\Start Menu\Programs\ROS Simulator'
 New-Item -ItemType Directory -Force -Path $startMenuDir | Out-Null
 
-New-RobotLabShortcut -Path (Join-Path $publicDesktop 'Robot Lab.lnk') `
+New-RobotLabShortcut -Path (Join-Path $publicDesktop 'ROS Simulator.lnk') `
     -Target $startCmd -Description 'Start the TurtleBot3 simulation environment'
 
 foreach ($entry in @(
-    @{ Name = 'Robot Lab';         File = 'Start Robot Lab.cmd';   Desc = 'Start the TurtleBot3 simulation environment' },
-    @{ Name = 'Robot Lab - Stop';  File = 'Stop Robot Lab.cmd';    Desc = 'Shut the simulation environment down' },
-    @{ Name = 'Robot Lab - Check'; File = 'Robot Lab (Check).cmd'; Desc = 'Diagnose why Robot Lab will not start' },
-    @{ Name = 'Robot Lab - Reset'; File = 'Robot Lab (Reset).cmd'; Desc = 'Clear the compiled workspace cache' }
+    @{ Name = 'ROS Simulator';         File = 'Start ROS Simulator.cmd';   Desc = 'Start the TurtleBot3 simulation environment' },
+    @{ Name = 'ROS Simulator - Stop';  File = 'Stop ROS Simulator.cmd';    Desc = 'Shut the simulation environment down' },
+    @{ Name = 'ROS Simulator - Check'; File = 'ROS Simulator (Check).cmd'; Desc = 'Diagnose why ROS Simulator will not start' },
+    @{ Name = 'ROS Simulator - Reset'; File = 'ROS Simulator (Reset).cmd'; Desc = 'Clear the compiled workspace cache' }
 )) {
     New-RobotLabShortcut -Path (Join-Path $startMenuDir "$($entry.Name).lnk") `
         -Target (Join-Path $launcherDir $entry.File) -Description $entry.Desc
@@ -302,7 +302,7 @@ foreach ($entry in @(
 Write-Host ""
 Write-Host "  Setup complete." -ForegroundColor Green
 Write-Host ""
-Write-Host "  Students now log in with a normal account and double-click 'Robot Lab' on the" -ForegroundColor Gray
+Write-Host "  Students now log in with a normal account and double-click 'ROS Simulator' on the" -ForegroundColor Gray
 Write-Host "  desktop. On their first run the launcher copies the workspace into their profile," -ForegroundColor Gray
 Write-Host "  which takes a few seconds; after that it starts in well under a minute." -ForegroundColor Gray
 Write-Host ""
@@ -312,5 +312,5 @@ if (-not $StudentGroup) {
     Write-Host "   - the student group is a member of the local 'docker-users' group" -ForegroundColor Gray
 }
 Write-Host "   - Docker Desktop is set to start on login, or students know to start it" -ForegroundColor Gray
-Write-Host "   - log in as a real student account and run 'Robot Lab - Check' once" -ForegroundColor Gray
+Write-Host "   - log in as a real student account and run 'ROS Simulator - Check' once" -ForegroundColor Gray
 Write-Host ""

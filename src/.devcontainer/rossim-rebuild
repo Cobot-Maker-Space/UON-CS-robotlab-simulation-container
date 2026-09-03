@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# robotlab-rebuild - rebuild the ROS 2 workspace from inside the dev container.
+# rossim-rebuild - rebuild the ROS 2 workspace from inside the dev container.
 #
 # The container starts with a workspace that was already compiled when the image was built, so
 # setup.sh does not build anything on startup. This is the explicit way to rebuild after changing
 # source code.
 #
 # Usage:
-#   robotlab-rebuild                  incremental build of every package
-#   robotlab-rebuild <pkg> [<pkg>...] incremental build of just those packages (much faster)
-#   robotlab-rebuild --clean          wipe build/ and install/ and build everything from scratch
+#   rossim-rebuild                  incremental build of every package
+#   rossim-rebuild <pkg> [<pkg>...] incremental build of just those packages (much faster)
+#   rossim-rebuild --clean          wipe build/ and install/ and build everything from scratch
 set -euo pipefail
 
 WORKSPACE_DIR="/home/ros2_ws"
@@ -24,7 +24,7 @@ for arg in "$@"; do
       ;;
     -*)
       echo "Unknown option: $arg" >&2
-      echo "Try 'robotlab-rebuild --help'." >&2
+      echo "Try 'rossim-rebuild --help'." >&2
       exit 2
       ;;
     *) PACKAGES+=("$arg") ;;

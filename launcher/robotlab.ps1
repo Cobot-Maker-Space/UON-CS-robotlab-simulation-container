@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Robot Lab launcher - brings up the whole TurtleBot3 simulation environment in one step.
+    ROS Simulator launcher - brings up the whole TurtleBot3 simulation environment in one step.
 
 .DESCRIPTION
     Everything a student used to do by hand:
@@ -12,7 +12,7 @@
       - open the browser at the noVNC desktop
       - open VS Code ALREADY ATTACHED to the dev container
 
-    Students do not run this directly. They double-click "Start Robot Lab.cmd", or the shortcut
+    Students do not run this directly. They double-click "Start ROS Simulator.cmd", or the shortcut
     that Install-RobotLab.ps1 puts on the desktop.
 
 .PARAMETER Command
@@ -43,7 +43,7 @@ $ErrorActionPreference = 'Stop'
 
 # --- Paths ------------------------------------------------------------------------------------
 # The launcher lives at <repo>/launcher/, so the repository root is one level up. Self-locating,
-# so it works whether IT deployed to C:\ProgramData\RobotLab\repo or a developer is running it
+# so it works whether IT deployed to C:\ProgramData\ROSSimulator\repo or a developer is running it
 # from a personal clone.
 $RepoRoot   = Split-Path -Parent $PSScriptRoot
 $RepoSrc    = Join-Path $RepoRoot 'src'
@@ -51,8 +51,8 @@ $StartVnc   = Join-Path $RepoSrc '.devcontainer\start_vnc.ps1'
 
 # The student's own writable workspace. Kept short and inside their profile, well clear of the
 # 260-character path limit, and private to their Windows account on a shared lab PC.
-$RobotLabHome  = if ($env:ROBOTLAB_HOME) { $env:ROBOTLAB_HOME } else { Join-Path $env:USERPROFILE 'RobotLab' }
-$UserWorkspace = Join-Path $RobotLabHome 'ros2_ws'
+$SimHome  = if ($env:ROSSIM_HOME) { $env:ROSSIM_HOME } else { Join-Path $env:USERPROFILE 'ROSSimulator' }
+$UserWorkspace = Join-Path $SimHome 'ros2_ws'
 $UserSrc       = Join-Path $UserWorkspace 'src'
 
 $HostPort = if ($env:HOST_PORT) { $env:HOST_PORT } else { '8080' }
@@ -448,13 +448,13 @@ function Open-VsCode {
 
 function Invoke-Start {
     Write-Host ""
-    Write-Host "  Robot Lab" -ForegroundColor White
+    Write-Host "  ROS Simulator" -ForegroundColor White
     Write-Host "  ---------" -ForegroundColor White
     Write-Host ""
 
     if (-not (Invoke-Preflight)) {
         Stop-WithError -Message "This machine is not ready. See the failure above." -Remedy @(
-            "Run 'Robot Lab (Doctor)' or 'robotlab.ps1 doctor' for the full list of checks."
+            "Run 'ROS Simulator - Check' or 'robotlab.ps1 doctor' for the full list of checks."
         )
     }
 
@@ -474,13 +474,13 @@ function Invoke-Start {
     Open-VsCode
 
     Write-Host ""
-    Write-Ok "Robot Lab is ready."
+    Write-Ok "ROS Simulator is ready."
     Write-Host ""
     Write-Host "  Browser tab : Gazebo and RViz appear here  ($VncUrl)" -ForegroundColor Gray
     Write-Host "  VS Code     : edit code, and use its terminal to run ROS commands" -ForegroundColor Gray
     Write-Host "  Your files  : $UserSrc" -ForegroundColor Gray
     Write-Host ""
-    Write-Host "  After changing C++ source, run 'robotlab-rebuild' in the VS Code terminal." -ForegroundColor Gray
+    Write-Host "  After changing C++ source, run 'rossim-rebuild' in the VS Code terminal." -ForegroundColor Gray
     Write-Host ""
 }
 
@@ -523,7 +523,7 @@ function Invoke-Status {
     if (Test-Path $UserSrc) { Write-Ok "  exists" } else { Write-Warn "  not created yet" }
 
     Write-Info "Cache volumes for '$($env:USERNAME)':"
-    $volumes = docker volume ls --format '{{.Name}}' --filter "name=robotlab-" 2>$null |
+    $volumes = docker volume ls --format '{{.Name}}' --filter "name=rossim-" 2>$null |
         Where-Object { $_ -like "*-$($env:USERNAME)" }
     if ($volumes) { $volumes | ForEach-Object { Write-Host "  $_" } }
     else { Write-Host "  none yet (they are created on first container start)" }
@@ -551,14 +551,14 @@ function Invoke-Reset {
     }
 
     foreach ($kind in @('build', 'install', 'log')) {
-        $name = "robotlab-$kind-$($env:USERNAME)"
+        $name = "rossim-$kind-$($env:USERNAME)"
         docker volume rm $name > $null 2>&1
         if ($LASTEXITCODE -eq 0) { Write-Ok "Removed volume $name" }
         else { Write-Info "Volume $name was not present." }
     }
 
     Write-Host ""
-    Write-Ok "Cache cleared. Start Robot Lab again to rebuild it from the image."
+    Write-Ok "Cache cleared. Start ROS Simulator again to rebuild it from the image."
     Write-Host ""
     Write-Warn "Your source code was left alone, on purpose."
     Write-Host "  If you also want a clean copy of the original packages, rename or delete" -ForegroundColor Gray
@@ -567,7 +567,7 @@ function Invoke-Reset {
 
 function Invoke-Doctor {
     Write-Host ""
-    Write-Host "  Robot Lab - system check" -ForegroundColor White
+    Write-Host "  ROS Simulator - system check" -ForegroundColor White
     Write-Host ""
     $allOk = Invoke-Preflight -ContinueOnFailure
 
@@ -580,7 +580,7 @@ function Invoke-Doctor {
 
     Write-Host ""
     if ($allOk) {
-        Write-Ok "Everything checks out. Robot Lab should start normally."
+        Write-Ok "Everything checks out. ROS Simulator should start normally."
     } else {
         Write-Err "One or more checks failed. See the details above."
     }

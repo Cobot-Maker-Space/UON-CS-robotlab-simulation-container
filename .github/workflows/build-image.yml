@@ -6,7 +6,7 @@ name: Build dev container image
 # is how the production package ended up with a single tag ('2026-08-07') while devcontainer.json
 # pinned ':latest' - a tag that never existed, so every student got 'manifest unknown'.
 #
-# This publishes to a SEPARATE testing package, ghcr.io/<owner>/uon-windows-testing. The
+# This publishes to a SEPARATE testing package, ghcr.io/<owner>/windows-robot-simulation. The
 # production uon-ros2-humble package is not touched by this workflow. Promotion to production is
 # a deliberate, separate step once the image has been validated on real lab hardware.
 #
@@ -18,9 +18,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Image tag to publish (e.g. lab-2026-08). Must match the pin in devcontainer.json."
+        description: "Image tag to publish (e.g. humble-sim-2026-09). Must match the pin in devcontainer.json."
         required: true
-        default: lab-2026-08
+        default: humble-sim-2026-09
       push_latest:
         description: "Also move the ':latest' tag on the testing package."
         type: boolean
@@ -28,13 +28,13 @@ on:
         default: true
   push:
     tags:
-      - "lab-*"
+      - "humble-sim-*"
 
 env:
   REGISTRY: ghcr.io
   # The owner is 'Cobot-Maker-Space' but GHCR rejects any uppercase in a repository name, so the
   # full image name is lowercased in the 'meta' step rather than built here.
-  IMAGE_BASENAME: uon-windows-testing
+  IMAGE_BASENAME: windows-robot-simulation
 
 jobs:
   build:
@@ -131,7 +131,7 @@ jobs:
             'source /opt/ros/humble/setup.bash && ros2 pkg prefix gazebo_ros'
 
           echo "--- helper on PATH? ---"
-          docker run --rm "$IMAGE" bash -lc 'command -v robotlab-rebuild'
+          docker run --rm "$IMAGE" bash -lc 'command -v rossim-rebuild'
 
       - name: Remind about package visibility
         run: |

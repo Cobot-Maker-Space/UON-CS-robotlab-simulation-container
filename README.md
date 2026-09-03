@@ -1,6 +1,7 @@
-# 🐢 Robot Lab — Windows lab PC deployment
+# 🐢 ROS Simulator — Windows deployment
 
-For **shared lab PCs** where students log in with a **non-admin account**.
+For **shared Windows PCs** where students log in with a **non-admin account**, so they can do
+independent ROS 2 work outside timetabled lab sessions.
 
 IT prepares the machine once. After that a student double-clicks one shortcut and gets the full
 TurtleBot3 environment: Gazebo and RViz in a browser tab, VS Code already attached to the ROS 2
@@ -18,8 +19,8 @@ No git, no PowerShell, no `Ctrl+Shift+P`, and no waiting for a build.
 Open **PowerShell as administrator** on the machine image and run:
 
 ```powershell
-git clone --branch clickable-lab-machines-testing https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git C:\Temp\robotlab
-powershell -ExecutionPolicy Bypass -File C:\Temp\robotlab\launcher\Install-RobotLab.ps1 -StudentGroup "DOMAIN\Students"
+git clone --branch IT-Deployment https://github.com/Cobot-Maker-Space/UON-CS-robotlab-simulation-container.git C:\Temp\robotlab
+powershell -ExecutionPolicy Bypass -File C:\Temp\robotlab\launcher\Install-RobotLab.ps1 -StudentGroup "REPLACE-WITH-REAL-GROUP"
 ```
 
 That script is idempotent — re-run it any time to update a machine. It:
@@ -27,11 +28,11 @@ That script is idempotent — re-run it any time to update a machine. It:
 1. Verifies **Docker Desktop**, **VS Code** and **Git** are installed
    (add `-InstallMissing` to attempt them via `winget`)
 2. Adds your student group to the local **`docker-users`** group, so non-admins can use Docker
-3. Clones the repo to `C:\ProgramData\RobotLab\repo`
+3. Clones the repo to `C:\ProgramData\ROSSimulator\repo`
 4. **Pre-pulls both container images (~2.6 GB)** — the step that must never happen for the first
    time in front of a class
 5. Creates the `ros` Docker network
-6. Puts a **Robot Lab** shortcut on the all-users desktop and in the Start menu
+6. Puts a **ROS Simulator** shortcut on the all-users desktop and in the Start menu
 
 ### One thing the installer cannot do for you
 
@@ -48,15 +49,15 @@ code --install-extension ms-vscode-remote.remote-containers
 
 ### Verify before a class
 
-Log in as a **real student account** — not an admin one — and run **Robot Lab - Check** from the
-Start menu. It runs every preflight check and reports what is wrong. Then double-click **Robot Lab**
+Log in as a **real student account** — not an admin one — and run **ROS Simulator - Check** from the
+Start menu. It runs every preflight check and reports what is wrong. Then double-click **ROS Simulator**
 once and confirm it comes all the way up.
 
 ---
 
 ## 🔧 Student instructions
 
-Double-click **Robot Lab** on the desktop.
+Double-click **ROS Simulator** on the desktop.
 
 The first launch takes about a minute while your personal copy of the workspace is created. After
 that it is a few seconds. Two things open:
@@ -66,7 +67,7 @@ that it is a few seconds. Two things open:
 | **Browser tab** (`http://localhost:8080/vnc.html`) | Gazebo and RViz appear here. Click **Connect** if the page looks blank. |
 | **VS Code** | Edit code. Its terminal is *inside* the container, so `ros2` commands work there. |
 
-Your files live in `%USERPROFILE%\RobotLab\ros2_ws\src` and are private to your account.
+Your files live in `%USERPROFILE%\ROSSimulator\ros2_ws\src` and are private to your account.
 
 Try it:
 
@@ -80,36 +81,36 @@ Python nodes and launch files take effect immediately. After changing **C++**, r
 VS Code terminal:
 
 ```bash
-robotlab-rebuild                    # rebuild everything, incrementally
-robotlab-rebuild turtlebot3_gazebo  # rebuild just one package, much faster
-robotlab-rebuild --clean            # start over from scratch (slow, ~20 min)
+rossim-rebuild                    # rebuild everything, incrementally
+rossim-rebuild turtlebot3_gazebo  # rebuild just one package, much faster
+rossim-rebuild --clean            # start over from scratch (slow, ~20 min)
 ```
 
 ### The other shortcuts
 
-Under **Start menu → Robot Lab**:
+Under **Start menu → ROS Simulator**:
 
-- **Robot Lab - Stop** — shuts the containers down. Your work is untouched.
-- **Robot Lab - Check** — diagnoses why it will not start. Try this first.
-- **Robot Lab - Reset** — clears the compiled workspace cache. Use after IT updates the image, or
+- **ROS Simulator - Stop** — shuts the containers down. Your work is untouched.
+- **ROS Simulator - Check** — diagnoses why it will not start. Try this first.
+- **ROS Simulator - Reset** — clears the compiled workspace cache. Use after IT updates the image, or
   if the container will not start. Asks for confirmation; leaves your source code alone.
 
 ---
 
 ## 🛠 Troubleshooting
 
-Run **Robot Lab - Check** first — it identifies most of these automatically.
+Run **ROS Simulator - Check** first — it identifies most of these automatically.
 
 | Issue | Solution |
 |---|---|
-| Nothing happens / window flashes and closes | Run **Robot Lab - Check** from the Start menu. It keeps its window open and explains what failed. |
+| Nothing happens / window flashes and closes | Run **ROS Simulator - Check** from the Start menu. It keeps its window open and explains what failed. |
 | `Docker Desktop is not responding` | Start Docker Desktop from the Start menu and wait for the whale icon to stop animating — a cold boot takes a minute or two. |
 | Permission or pipe error talking to Docker | The account is not in the local `docker-users` group. IT-side fix; see the one-time setup above. |
 | `Could not install the VS Code Dev Containers extension` | The launcher tries to install it automatically on first run; this means that failed (usually no network). Run `code --install-extension ms-vscode-remote.remote-containers` yourself. No admin needed. |
 | VS Code opens the folder but does not attach to the container | The launcher falls back to this deliberately. Press `Ctrl+Shift+P`, type **Reopen in Container**, press Enter. |
 | Host port 8080 already in use | Something else is bound to it. Set another port first: `$env:HOST_PORT = "9000"`, then start again. |
 | `manifest unknown` or `denied` when pulling the image | The image tag does not exist, or the GHCR package is still private. Maintainer fix — not something to retry. |
-| Container will not start after IT updated the image | Run **Robot Lab - Reset**. A Docker named volume is only seeded when it is first created, so an existing cache does not pick up a new image on its own. |
+| Container will not start after IT updated the image | Run **ROS Simulator - Reset**. A Docker named volume is only seeded when it is first created, so an existing cache does not pick up a new image on its own. |
 | Gazebo spawn service failed | Don't `Ctrl+C` — let it fail completely, then close and restart. |
 | Webcam not accessible in the container | Expected. Passing a USB camera into Docker Desktop's VM needs [usbipd-win](https://github.com/dorssel/usbipd-win) and admin rights. Lab PCs are set up without camera passthrough. |
 
@@ -118,8 +119,8 @@ Run **Robot Lab - Check** first — it identifies most of these automatically.
 ## 💡 How it fits together
 
 ```
-C:\ProgramData\RobotLab\repo\      IT-managed clone. Students never edit this.
-%USERPROFILE%\RobotLab\ros2_ws\    Per-student copy, made on first launch. Their work lives here.
+C:\ProgramData\ROSSimulator\repo\      IT-managed clone. Students never edit this.
+%USERPROFILE%\ROSSimulator\ros2_ws\    Per-student copy, made on first launch. Their work lives here.
 
   novnc container  <--- 'ros' network --->  ROS 2 dev container
   serves the desktop                        runs Gazebo/RViz, renders onto novnc
@@ -129,7 +130,7 @@ C:\ProgramData\RobotLab\repo\      IT-managed clone. Students never edit this.
 - Default user inside the container: `team`
 - Workspace mounts at `/home/ros2_ws/src`
 - `build/`, `install/` and `log/` live in **per-user Docker named volumes**
-  (`robotlab-build-<username>` and friends), not on the host filesystem
+  (`rossim-build-<username>` and friends), not on the host filesystem
 - The image ships an **already-compiled** workspace. Docker seeds each new named volume from it, so
   a student's first start inherits the finished build instead of running `colcon` for 20 minutes
 
@@ -144,7 +145,7 @@ C:\ProgramData\RobotLab\repo\      IT-managed clone. Students never edit this.
   URDFs and worlds — not tracked against upstream ROBOTIS. Nothing in this repo may clone over
   them. An earlier `setup.sh` did exactly that whenever a package folder went missing.
 - **Publishing:** run the **Build dev container image** GitHub Action. It publishes to the testing
-  package `ghcr.io/cobot-maker-space/uon-windows-testing` and refuses to run if the tag it would
+  package `ghcr.io/cobot-maker-space/windows-robot-simulation` and refuses to run if the tag it would
   publish does not match the pin in `devcontainer.json`. New GHCR packages are **private by
   default** — set the visibility to Public after the first push, or no lab PC can pull it.
 - **`cache/` is no longer tracked.** It was 3,995 files and 221 MB with a 271-character deepest

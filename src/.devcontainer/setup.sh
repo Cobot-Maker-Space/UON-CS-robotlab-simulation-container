@@ -47,7 +47,7 @@ fi
 # already done and there is nothing to do.
 if [ -f "${WORKSPACE_DIR}/install/setup.bash" ]; then
   echo "Prebuilt workspace found at ${WORKSPACE_DIR}/install - skipping colcon build."
-  echo "  Run 'robotlab-rebuild' if you have changed source and want to rebuild."
+  echo "  Run 'rossim-rebuild' if you have changed source and want to rebuild."
   echo "=== setup.sh finished (no build needed) ==="
   exit 0
 fi

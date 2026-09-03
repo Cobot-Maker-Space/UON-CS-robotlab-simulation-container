@@ -1,13 +1,13 @@
 {
     "name": "ROS 2 Development Container",
 
-    // Pinned to a dated tag on the WINDOWS TESTING package, deliberately not ':latest' and
-    // deliberately not the production 'uon-ros2-humble' package:
-    //   - a dated pin means a later image push cannot change what a running lab class is using;
+    // Pinned to a dated tag on the windows-robot-simulation package, deliberately not ':latest'
+    // and deliberately not the production 'uon-ros2-humble' package:
+    //   - a dated pin means a later image push cannot change what a running class is using;
     //   - a separate package means this branch cannot affect anyone still pulling production.
     // Published by .github/workflows/build-image.yml. Once this has been validated on real lab
     // hardware, the same digest gets promoted onto the production package.
-    "image": "ghcr.io/cobot-maker-space/uon-windows-testing:lab-2026-08",
+    "image": "ghcr.io/cobot-maker-space/windows-robot-simulation:humble-sim-2026-09",
     "privileged": true,
     "remoteUser": "team",
 
@@ -54,12 +54,12 @@
     //      two students on one machine cannot corrupt each other's build tree.
     //
     // Caveat: a volume is seeded ONLY when it is first created. Pointing this file at a newer
-    // image will not refresh a volume that already exists. Use 'Robot Lab (Reset).cmd', which
+    // image will not refresh a volume that already exists. Use 'ROS Simulator (Reset).cmd', which
     // deletes these volumes so the next start re-seeds them.
     "mounts": [
-        "source=robotlab-build-${localEnv:USERNAME},target=/home/ros2_ws/build,type=volume",
-        "source=robotlab-install-${localEnv:USERNAME},target=/home/ros2_ws/install,type=volume",
-        "source=robotlab-log-${localEnv:USERNAME},target=/home/ros2_ws/log,type=volume"
+        "source=rossim-build-${localEnv:USERNAME},target=/home/ros2_ws/build,type=volume",
+        "source=rossim-install-${localEnv:USERNAME},target=/home/ros2_ws/install,type=volume",
+        "source=rossim-log-${localEnv:USERNAME},target=/home/ros2_ws/log,type=volume"
     ],
 
     // Runs the copy baked into the image at build time, NOT src/.devcontainer/setup.sh from the

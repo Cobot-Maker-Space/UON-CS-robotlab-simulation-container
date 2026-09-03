@@ -3,7 +3,7 @@
 # IMPORTANT: the build context is the REPOSITORY ROOT, not this directory, because the image bakes
 # in a compiled copy of the customised packages under src/. Build it with:
 #
-#   docker build -f src/.devcontainer/Dockerfile -t ghcr.io/cobot-maker-space/uon-windows-testing:lab-2026-08 .
+#   docker build -f src/.devcontainer/Dockerfile -t ghcr.io/cobot-maker-space/windows-robot-simulation:humble-sim-2026-09 .
 #
 # .github/workflows/build-image.yml does exactly that. See also .dockerignore at the repo root.
 FROM ros:humble
@@ -57,9 +57,9 @@ RUN apt-get update && apt-get install -y \
 # dos2unix guards against a contributor committing these with CRLF from a Windows checkout.
 # .gitattributes should already prevent it, but a broken shebang here breaks every container.
 COPY src/.devcontainer/setup.sh /usr/local/bin/setup.sh
-COPY src/.devcontainer/robotlab-rebuild /usr/local/bin/robotlab-rebuild
-RUN dos2unix /usr/local/bin/setup.sh /usr/local/bin/robotlab-rebuild \
-    && chmod +x /usr/local/bin/setup.sh /usr/local/bin/robotlab-rebuild
+COPY src/.devcontainer/rossim-rebuild /usr/local/bin/rossim-rebuild
+RUN dos2unix /usr/local/bin/setup.sh /usr/local/bin/rossim-rebuild \
+    && chmod +x /usr/local/bin/setup.sh /usr/local/bin/rossim-rebuild
 
 RUN usermod -aG video $USERNAME \
     && mkdir -p ${WORKSPACE_DIR}/src ${WORKSPACE_DIR}/build ${WORKSPACE_DIR}/install ${WORKSPACE_DIR}/log \
@@ -85,10 +85,10 @@ USER $USERNAME
 # this repo may clone over src/.
 #
 # build/ is shipped as well as install/, which costs image size but means a student's first
-# 'robotlab-rebuild' is incremental rather than a full 20-minute compile.
+# 'rossim-rebuild' is incremental rather than a full 20-minute compile.
 COPY --chown=$USER_UID:$USER_GID src/ ${WORKSPACE_DIR}/src/
 
-# --symlink-install must match the flag used by robotlab-rebuild and setup.sh: colcon refuses to
+# --symlink-install must match the flag used by rossim-rebuild and setup.sh: colcon refuses to
 # build into an install tree created with a different layout. The symlinks it creates point into
 # ${WORKSPACE_DIR}/src, which is exactly where the student's copy gets bind-mounted, so they still
 # resolve at runtime - and edits to Python nodes and launch files take effect without a rebuild.
