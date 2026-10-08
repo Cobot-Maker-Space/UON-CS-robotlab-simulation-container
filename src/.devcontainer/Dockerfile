@@ -70,6 +70,7 @@ RUN usermod -aG video $USERNAME \
 RUN printf '%s\n' \
     'source /opt/ros/humble/setup.bash' \
     '[ -f /home/ros2_ws/install/setup.bash ] && source /home/ros2_ws/install/setup.bash' \
+    'source /usr/share/gazebo/setup.sh' \
     >> /home/$USERNAME/.bashrc
 
 USER $USERNAME
