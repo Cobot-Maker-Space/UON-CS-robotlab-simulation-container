@@ -6,7 +6,9 @@ rem system-wide and needs no admin rights, which is what makes this work on a lo
 rem lab account.
 title ROS Simulator
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0robotlab.ps1" start
-if errorlevel 1 (
+rem Not 'if errorlevel 1': that is false for the NEGATIVE exit code a killed process leaves
+rem (e.g. 0xC0000420 from Sophos), which made the window vanish with no message at all.
+if %errorlevel% neq 0 (
     echo.
     pause
 )
