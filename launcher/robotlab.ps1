@@ -107,6 +107,33 @@ function Invoke-DockerQuiet {
     }
 }
 
+function Invoke-StartVnc {
+    # Runs start_vnc.ps1 INSIDE this process rather than in a second powershell.exe.
+    #
+    # The lab image runs Sophos Intercept X, which silently kills a PowerShell started with
+    # '-ExecutionPolicy Bypass' that then starts another one - exactly the chain the .cmd wrapper
+    # plus a nested 'powershell -File start_vnc.ps1' produced. Both processes died with exit code
+    # 0xC0000420, no message, and because that code is negative the .cmd skipped its pause, so the
+    # window just vanished. Do not reintroduce a nested powershell.exe anywhere in this launcher.
+    #
+    # 'exit N' inside start_vnc.ps1 ends only that script and sets $LASTEXITCODE, so callers can
+    # still check it. Preference variables are inherited by a called script, and start_vnc.ps1's
+    # docker probes redirect stderr, which under this file's 'Stop' would be a terminating error -
+    # hence 'Continue' here, function-scoped like Invoke-DockerQuiet. Out-Host keeps docker output
+    # on screen instead of leaking into this function's return value.
+    param([string]$Action)
+
+    $ErrorActionPreference = 'Continue'
+    $global:LASTEXITCODE = 0
+    try {
+        & $StartVnc $Action | Out-Host
+        return $LASTEXITCODE
+    } catch {
+        Write-Err "start_vnc.ps1 failed: $($_.Exception.Message)"
+        return 1
+    }
+}
+
 # --- Preflight checks -------------------------------------------------------------------------
 # Each returns $true/$false and prints its own diagnosis, so 'doctor' can run them all and 'start'
 # can stop at the first failure.
@@ -373,8 +400,7 @@ function Start-NoVnc {
     Write-Info "Starting the graphical desktop service (noVNC)..."
     # Delegate rather than reimplement: start_vnc.ps1 is already idempotent and hardened, and the
     # WSL2 and manual flows still depend on it behaving exactly this way.
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $StartVnc start
-    if ($LASTEXITCODE -ne 0) {
+    if ((Invoke-StartVnc start) -ne 0) {
         Stop-WithError -Message "Could not start the noVNC container." -Remedy @(
             "Read the message above from start_vnc.ps1 - it explains what failed.",
             "If port $HostPort is in use, set a different one first:",
@@ -562,7 +588,7 @@ function Invoke-Stop {
         Write-Info "No dev container running."
     }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $StartVnc stop
+    Invoke-StartVnc stop | Out-Null
 
     Write-Host ""
     Write-Ok "Stopped. Your work in $UserSrc is untouched."
@@ -581,7 +607,7 @@ function Invoke-Status {
         Write-Info "Dev container is not running."
     }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $StartVnc status
+    Invoke-StartVnc status | Out-Null
 
     Write-Host ""
     Write-Info "Workspace: $UserSrc"
@@ -652,6 +678,16 @@ function Invoke-Doctor {
 }
 
 # --- Entry point ------------------------------------------------------------------------------
+# Every run leaves a log of its own output, one file per command so running Check after a failed
+# start does not overwrite the evidence. If something outside this script kills it (see
+# Invoke-StartVnc), the console window can vanish, but the log keeps the last step reached.
+# Best effort: a launcher that cannot log must still launch.
+try {
+    $logDir = Join-Path $env:LOCALAPPDATA 'ROSSimulator'
+    New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+    Start-Transcript -Path (Join-Path $logDir "launcher-$Command.log") -Force | Out-Null
+} catch { }
+
 switch ($Command) {
     'start'  { Invoke-Start }
     'stop'   { Invoke-Stop }

@@ -37,6 +37,10 @@ That script is idempotent — re-run it any time to update a machine. It:
 ### One thing the installer cannot do for you
 
 - **Docker Desktop must be running** before a student launches. Set it to start on login.
+- **Endpoint security must allow the launcher.** It runs `powershell -ExecutionPolicy Bypass` from a
+  `.cmd`. Sophos Intercept X has been seen silently killing PowerShell started this way when it
+  spawned a second PowerShell; the launcher no longer does that, but an exclusion for
+  `C:\ProgramData\ROSSimulator\repo\launcher\` protects against a future policy change.
 
 The VS Code Dev Containers extension installs per user, but you do not need a login script or GPO
 for it: the launcher checks for it on every run and silently installs it for the current account
@@ -103,7 +107,8 @@ Run **ROS Simulator - Check** first — it identifies most of these automaticall
 
 | Issue | Solution |
 |---|---|
-| Nothing happens / window flashes and closes | Run **ROS Simulator - Check** from the Start menu. It keeps its window open and explains what failed. |
+| Nothing happens / window flashes and closes | Run **ROS Simulator - Check** from the Start menu. It keeps its window open and explains what failed. Every run also writes a log to `%LOCALAPPDATA%\ROSSimulator\launcher-start.log` - its last line is the last step reached. |
+| Window closes right after `Starting the graphical desktop service (noVNC)...`, Check reports all OK | Endpoint security (Sophos Intercept X on the lab image) killed a nested PowerShell; exit code `-1073740768` / `0xC0000420`. Fixed in the launcher, which no longer starts a second `powershell.exe`. If it comes back, IT should check Sophos Central and exclude `C:\ProgramData\ROSSimulator\repo\launcher\`. |
 | `Docker Desktop is not responding` | Start Docker Desktop from the Start menu and wait for the whale icon to stop animating — a cold boot takes a minute or two. |
 | Permission or pipe error talking to Docker | The account is not in the local `docker-users` group. IT-side fix; see the one-time setup above. |
 | `Could not install the VS Code Dev Containers extension` | The launcher tries to install it automatically on first run; this means that failed (usually no network). Run `code --install-extension ms-vscode-remote.remote-containers` yourself. No admin needed. |
